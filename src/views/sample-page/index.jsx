@@ -1,20 +1,44 @@
-// material-ui
-import Typography from '@mui/material/Typography';
+// import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+// import { useDemoData } from '@mui/x-data-grid-generator';
+// import { useUser } from '../../../src/context/UserContext';
 
-// project imports
-import MainCard from 'ui-component/cards/MainCard';
+import Form from '../utilities/Form';
 
-// ==============================|| SAMPLE PAGE ||============================== //
+export default function BasicExampleDataGrid() {
+  const fields = [
+    { label: 'Name', name: 'name', type: 'text', placeholder: 'Enter your name' },
+    { label: 'Email', name: 'email', type: 'email', placeholder: 'Enter your email' },
+    { label: 'Password', name: 'password', type: 'password', placeholder: 'Enter your password' },
+    { label: 'Age', name: 'age', type: 'number', placeholder: 'Enter your age' },
+    { label: 'Age', name: 'age', type: 'number', placeholder: 'Enter your age' },
+    { label: 'Age', name: 'age', type: 'number', placeholder: 'Enter your age' },
+    { label: 'Age', name: 'age', type: 'number', placeholder: 'Enter your age' },
+    { label: 'Email', name: 'email', type: 'email', placeholder: 'Enter your email' },
+    { label: 'Email', name: 'email', type: 'email', placeholder: 'Enter your email' },
+    { label: 'Email', name: 'email', type: 'email', placeholder: 'Enter your email' },
+    {
+      label: 'Role',
+      name: 'role',
+      type: 'select',
+      options: [
+        { value: '', label: 'Select your role' },
+        { value: 'admin', label: 'Admin' },
+        { value: 'editor', label: 'Editor' },
+        { value: 'viewer', label: 'Viewer' }
+      ]
+    }
+  ];
 
-const SamplePage = () => (
-  <MainCard title="Sample Card">
-    <Typography variant="body2">
-      Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut enif ad
-      minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos aube grue dolor in reprehended
-      in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa qui officiate
-      descent molls anim id est labours.
-    </Typography>
-  </MainCard>
-);
+  const handleSubmit = (data) => {
+    console.log('Form Data:', data);
+    alert(`Form submitted with data: ${JSON.stringify(data)}`);
+  };
 
-export default SamplePage;
+  return (
+    <>
+      <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
+        <Form fields={fields} onSubmit={handleSubmit} />
+      </div>
+    </>
+  );
+}

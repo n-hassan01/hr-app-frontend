@@ -1,13 +1,13 @@
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 // material-ui
 import ButtonBase from '@mui/material/ButtonBase';
 
 // project imports
 import config from 'config';
-import Logo from 'ui-component/Logo';
 import { MENU_OPEN } from 'store/actions';
+import Logo from 'ui-component/Logo';
 
 // ==============================|| MAIN LOGO ||============================== //
 

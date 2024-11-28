@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
+import Button from './Button';
 
-const Form = ({ fields, onSubmit, formStyle = {}, buttonLabel = 'Submit' }) => {
+const Form = ({ fields, onSubmit, formStyle = {} }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -8,23 +9,24 @@ const Form = ({ fields, onSubmit, formStyle = {}, buttonLabel = 'Submit' }) => {
     onSubmit(data);
   };
 
-  // Media query styles
   const responsiveStyles = {
     form: {
-      maxWidth: '500px',
-      width: '90%',
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '15px',
+      width: '100%',
       margin: '0 auto',
       padding: '20px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      borderRadius: '8px',
       backgroundColor: '#fff',
       boxSizing: 'border-box'
     },
     field: {
-      marginBottom: '15px'
+      display: 'flex',
+      flexDirection: 'column',
+      flex: '1 1 calc(25% - 15px)',
+      boxSizing: 'border-box'
     },
     label: {
-      display: 'block',
       marginBottom: '8px',
       fontWeight: 'bold',
       fontSize: '14px'
@@ -36,56 +38,63 @@ const Form = ({ fields, onSubmit, formStyle = {}, buttonLabel = 'Submit' }) => {
       borderRadius: '4px',
       boxSizing: 'border-box'
     },
+    select: {
+      padding: '10px',
+      width: '100%',
+      border: '1px solid #ccc',
+      borderRadius: '4px',
+      boxSizing: 'border-box'
+    },
     button: {
-      padding: '12px 20px',
+      padding: '10px 20px',
       marginTop: '15px',
       width: '100%',
-      backgroundColor: '#007BFF',
-      color: '#fff',
+      maxWidth: '100%',
+      backgroundColor: '#5b2c6f',
+      color: 'white',
       border: 'none',
-      borderRadius: '4px',
+      borderRadius: '5px',
       cursor: 'pointer'
-    },
-    '@media (max-width: 768px)': {
-      form: {
-        padding: '10px'
-      },
-      label: {
-        fontSize: '12px'
-      },
-      button: {
-        fontSize: '14px'
-      }
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{
-        ...responsiveStyles.form,
-        ...formStyle
-      }}
-    >
-      {fields.map((field, index) => (
-        <div key={index} style={responsiveStyles.field}>
-          <label style={responsiveStyles.label}>{field.label}</label>
-          <input
-            type={field.type}
-            name={field.name}
-            placeholder={field.placeholder || ''}
-            required={field.required || false}
-            style={{
-              ...responsiveStyles.input,
-              ...field.style
-            }}
-          />
-        </div>
-      ))}
-      <button type="submit" style={responsiveStyles.button}>
-        {buttonLabel}
-      </button>
-    </form>
+    <>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          ...responsiveStyles.form,
+          ...formStyle
+        }}
+      >
+        {fields.map((field, index) => (
+          <div key={index} style={responsiveStyles.field}>
+            <label style={responsiveStyles.label}>{field.label}</label>
+            {field.type === 'select' ? (
+              <select name={field.name} style={responsiveStyles.select} required={field.required || false}>
+                {field.options.map((option, idx) => (
+                  <option key={idx} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type={field.type}
+                name={field.name}
+                placeholder={field.placeholder || ''}
+                required={field.required || false}
+                style={{
+                  ...responsiveStyles.input,
+                  ...field.style
+                }}
+              />
+            )}
+          </div>
+        ))}
+      </form>
+      <Button label="Submit" onClick={() => alert('Button clicked!')} style={responsiveStyles.button} />
+    </>
   );
 };
 

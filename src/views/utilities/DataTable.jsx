@@ -1,11 +1,14 @@
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useDemoData } from '@mui/x-data-grid-generator';
+// import { useUser } from '../../../src/context/UserContext';
 import Button from './Button';
 import Form from './Form';
 
 const VISIBLE_FIELDS = ['name', 'rating', 'country', 'dateCreated', 'isAdmin'];
 
 export default function BasicExampleDataGrid() {
+  // const { user } = useUser();
+  // console.log(user);
   const { data } = useDemoData({
     dataSet: 'Employee',
     visibleFields: VISIBLE_FIELDS,

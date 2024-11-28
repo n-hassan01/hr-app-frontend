@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
 
 // material-ui
-import { useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
+import { useTheme } from '@mui/material/styles';
 
 // project imports
-import LogoSection from '../LogoSection';
-import SearchSection from './SearchSection';
+// import LogoSection from '../LogoSection';
+// import SearchSection from './SearchSection';
 import NotificationSection from './NotificationSection';
 import ProfileSection from './ProfileSection';
 
@@ -33,9 +33,10 @@ const Header = ({ handleLeftDrawerToggle }) => {
         }}
       >
         <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>
-          <LogoSection />
+          {/* <LogoSection /> */}
+          <h1> Herlan HR App</h1>
         </Box>
-        <ButtonBase sx={{ borderRadius: '8px', overflow: 'hidden' }}>
+        <ButtonBase sx={{ borderRadius: '8px', overflow: 'hidden', marginLeft: '5px' }}>
           <Avatar
             variant="rounded"
             sx={{
@@ -58,7 +59,7 @@ const Header = ({ handleLeftDrawerToggle }) => {
       </Box>
 
       {/* header search */}
-      <SearchSection />
+      {/* <SearchSection /> */}
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
 

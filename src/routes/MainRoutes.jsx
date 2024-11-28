@@ -1,16 +1,16 @@
 import { lazy } from 'react';
 // Project imports
 import MainLayout from 'layout/MainLayout';
+import { Navigate } from 'react-router-dom';
 import Loadable from 'ui-component/Loadable';
-
 // Lazy-loaded main content
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
 const DataTable = Loadable(lazy(() => import('views/utilities/DataTable')));
-// const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
-// const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
-// const SamplePage = Loadable(lazy(() => import('views/sample-page')));
-const AuthLogin3 = Loadable(lazy(() => import('views/pages/authentication3/Login3')));
+const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
+const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
+const SamplePage = Loadable(lazy(() => import('views/sample-page')));
+// const AuthLogin3 = Loadable(lazy(() => import('views/pages/authentication3/Login3')));
 // const AuthRegister3 = Loadable(lazy(() => import('views/pages/authentication3/Register3')));
 // const columns = [
 //   { field: 'id', headerName: 'ID', width: 70 },
@@ -34,15 +34,26 @@ const AuthLogin3 = Loadable(lazy(() => import('views/pages/authentication3/Login
 //   };
 // };
 
+const storedUser = localStorage.getItem('user');
+console.log(storedUser);
+const parsedUser = JSON.parse(storedUser);
+console.log(parsedUser);
+
 // ==============================|| MAIN ROUTING ||============================== //
+
 const MainRoutes = {
   path: '/',
   element: <MainLayout />, // Layout for main routes
   children: [
     {
-      path: '/', // Default path
-      element: <DashboardDefault />
+      path: '/', // Redirect default to login
+      element: parsedUser ? <DashboardDefault /> : <Navigate to="/pages/login/login3" replace />
     },
+    // element: user ? <DashboardLayout /> : <Navigate to="/login" />,
+    // {
+    //   path: 'pages/login/login3',
+    //   element: <AuthLogin3 />
+    // },
     {
       path: 'dashboard',
       children: [
@@ -61,33 +72,23 @@ const MainRoutes = {
         },
         {
           path: 'util-color',
-          element: <AuthLogin3 />
+          element: <UtilsColor />
         },
-
         {
           path: 'data-table',
-          // element: <DataTable columns={columns} rows={rows} />
           element: <DataTable />
         },
         {
           path: 'util-shadow',
-          element: <AuthLogin3 />
+          element: <UtilsShadow />
         }
       ]
     },
     {
       path: 'sample-page',
-      element: <AuthLogin3 />
+      element: <SamplePage />
     }
-    // Include authentication routes for fallback or explicit login/register access
-    // {
-    //   path: '/pages/login/login3',
-    //   element: <AuthLogin3 />
-    // },
-    // {
-    //   path: '/pages/register/register3',
-    //   element: <AuthRegister3 />
-    // }
+    // Other routes remain unchanged
   ]
 };
 

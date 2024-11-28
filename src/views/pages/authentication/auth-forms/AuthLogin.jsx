@@ -22,7 +22,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 // third party
 import { Formik } from 'formik';
-import * as Yup from 'yup';
+// import * as Yup from 'yup';
 
 // project imports
 import AnimateButton from 'ui-component/extended/AnimateButton';
@@ -32,6 +32,10 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
+
+// import { useUser } from '../../../../context/UserContext';
+// Api Services
+import { login } from '../../../../services/ApiServices';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -56,16 +60,46 @@ const AuthLogin = ({ ...others }) => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+  // const { loginUser } = useUser();
+  // console.log(loginUser);
 
-  const handleSignIn = (values) => {
-    // Simulate authentication logic (e.g., validate user credentials)
-    if (values) {
-      localStorage.setItem('authToken', 'your-auth-token'); // Save auth token or manage authentication state
+  const handleSignIn = async (values) => {
+    try {
+      console.log(values);
+      const response = await login(values);
 
-      // Redirect to UtilsColor page
-      navigate('/utilities/color');
+      if (response.request.status === 200) {
+        const token = response.data;
+        console.log(token);
+        // loginUser(token);
+        console.log(localStorage);
+        localStorage.setItem('user', JSON.stringify(token));
+        console.log(localStorage);
+        // const storedUser = localStorage.getItem('user');
+        // console.log(storedUser);
+        // const parsedUser = JSON.parse(storedUser);
+        // console.log(parsedUser);
+
+        navigate('/dashboard/default', { replace: true });
+      } else {
+        alert('Authentication failed! Try again');
+      }
+    } catch (err) {
+      console.log(err.message);
+      alert('Authentication failed! Try again');
     }
   };
+
+  // const handleSignIn = (values) => {
+  //   console.log(values);
+
+  //   // Simulate authentication logic (e.g., validate user credentials)
+  //   if (values) {
+  //     localStorage.setItem('authToken', 'your-auth-token'); // Save auth token or manage authentication state
+
+  //     navigate('/dashboard/default');
+  //   }
+  // };
 
   return (
     <>
@@ -130,14 +164,14 @@ const AuthLogin = ({ ...others }) => {
 
       <Formik
         initialValues={{
-          email: '',
-          password: '',
-          submit: null
+          username: '',
+          password: ''
+          // submit: null
         }}
-        validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
-        })}
+        // validationSchema={Yup.object().shape({
+        //   email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+        //   password: Yup.string().max(255).required('Password is required')
+        // })}
         onSubmit={(values, { setSubmitting }) => {
           setSubmitting(false);
           handleSignIn(values);
@@ -149,17 +183,17 @@ const AuthLogin = ({ ...others }) => {
               <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-email-login"
-                type="email"
-                value={values.email}
-                name="email"
+                type="username"
+                value={values.username}
+                name="username"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 label="Email Address / Username"
                 inputProps={{}}
               />
-              {touched.email && errors.email && (
+              {touched.username && errors.username && (
                 <FormHelperText error id="standard-weight-helper-text-email-login">
-                  {errors.email}
+                  {errors.username}
                 </FormHelperText>
               )}
             </FormControl>

@@ -29,7 +29,7 @@ const utilities = {
             id: 'util-typography',
             title: 'Evaluation Form',
             type: 'item',
-            url: '/utils/util-typography',
+            url: 'candidate-evaluation',
             icon: icons.IconTypography,
             breadcrumbs: false
         },

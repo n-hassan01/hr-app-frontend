@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { getUserData } from '../../../../context/userContext';
 
 // material-ui
 import Avatar from '@mui/material/Avatar';
@@ -43,6 +43,8 @@ const ProfileSection = () => {
   const theme = useTheme();
   const customization = useSelector((state) => state.customization);
   const navigate = useNavigate();
+  const user = getUserData();
+  console.log(user);
 
   const [sdm, setSdm] = useState(true);
   const [value, setValue] = useState('');
@@ -155,13 +157,16 @@ const ProfileSection = () => {
                 <MainCard border={false} elevation={16} content={false} boxShadow shadow={theme.shadows[16]}>
                   <Box sx={{ p: 2, pb: 0 }}>
                     <Stack>
-                      <Stack direction="row" spacing={0.5} alignItems="center">
-                        <Typography variant="h4">Good Morning,</Typography>
-                        <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                          Johne Doe
-                        </Typography>
+                      <Stack>
+                        <Stack direction="row" spacing={0.5} alignItems="center">
+                          <Typography variant="h4">Good Morning,</Typography>
+                          <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
+                            {user.username}
+                          </Typography>
+                        </Stack>
+                        <Typography variant="subtitle2">{user.role}</Typography>
                       </Stack>
-                      <Typography variant="subtitle2">Project Admin</Typography>
+                      {/* <Typography variant="subtitle2">Project Admin</Typography> */}
                     </Stack>
                     <OutlinedInput
                       sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}

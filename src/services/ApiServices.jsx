@@ -57,3 +57,13 @@ export const addEvaluationForm = async (bodyInfo, loginToken) => {
     return err.message;
   }
 };
+
+export const signUpForm = async (bodyInfo) => {
+  try {
+    return await axios.post(`${usersUrl}auth/signup`, bodyInfo);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};

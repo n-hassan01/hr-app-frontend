@@ -3,7 +3,7 @@ import { lazy } from 'react';
 import MainLayout from 'layout/MainLayout';
 import { Navigate } from 'react-router-dom';
 import Loadable from 'ui-component/Loadable';
-import { getUserData } from '../context/userContext';
+import ProtectedRoute from '../routes/ProtectedRoutes'; // Import the ProtectedRoute
 
 // Lazy-loaded main content
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
@@ -14,9 +14,6 @@ const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 const CandidateEvalution = Loadable(lazy(() => import('views/pages/candidate_evaluation_form')));
 
-// For getting user data use this function just.
-const user = getUserData();
-
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -24,55 +21,86 @@ const MainRoutes = {
   element: <MainLayout />,
   children: [
     {
-      path: '/', // Redirect default to login
-      element: user ? <DashboardDefault /> : <Navigate to="/pages/login/login3" replace />
-      // element: <DashboardDefault />
+      path: '/',
+      element: <Navigate to="/pages/login/login3" replace /> // Default to login if no user
     },
-    // element: user ? <DashboardLayout /> : <Navigate to="/login" />,
-    // {
-    //   path: 'pages/login/login3',
-    //   element: <AuthLogin3 />
-    // },
+
+    // Protected Routes
     {
       path: 'dashboard',
+      element: (
+        <ProtectedRoute>
+          <DashboardDefault />
+        </ProtectedRoute>
+      ),
       children: [
         {
           path: 'default',
-          element: <DashboardDefault />
+          element: (
+            <ProtectedRoute>
+              <DashboardDefault />
+            </ProtectedRoute>
+          )
         }
       ]
     },
+
     {
       path: 'utils',
+      element: (
+        <ProtectedRoute>
+          <UtilsTypography />
+        </ProtectedRoute>
+      ),
       children: [
         {
           path: 'util-typography',
-          element: <UtilsTypography />
+          element: (
+            <ProtectedRoute>
+              <UtilsTypography />
+            </ProtectedRoute>
+          )
         },
         {
           path: 'util-color',
-          element: <UtilsColor />
+          element: (
+            <ProtectedRoute>
+              <UtilsColor />
+            </ProtectedRoute>
+          )
         },
         {
           path: 'data-table',
-          element: <DataTable />
+          element: (
+            <ProtectedRoute>
+              <DataTable />
+            </ProtectedRoute>
+          )
         },
         {
           path: 'util-shadow',
-          element: <UtilsShadow />
+          element: (
+            <ProtectedRoute>
+              <UtilsShadow />
+            </ProtectedRoute>
+          )
         }
       ]
     },
+
     {
       path: 'candidate-evaluation',
-      element: <CandidateEvalution />
+      element: (
+        <ProtectedRoute>
+          <CandidateEvalution />
+        </ProtectedRoute>
+      )
     },
 
     {
       path: 'sample-page',
-      element: <SamplePage />
+      element: <SamplePage /> // No authentication required for this route
     }
-    // Other routes remain unchanged
   ]
 };
 

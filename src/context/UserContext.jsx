@@ -5,6 +5,7 @@ export const getUserData = () => {
   if (storedUser) {
     const parsedUser = JSON.parse(storedUser);
     const token = parsedUser.data;
+    console.log(token);
 
     // Decode the JWT payload
     const base64Payload = token.split('.')[1];
@@ -17,7 +18,7 @@ export const getUserData = () => {
     const issuedAt = new Date(payloadObject.iat * 1000);
     const expiration = new Date(payloadObject.exp * 1000);
 
-    return { username, role, issuedAt, expiration };
+    return { token, username, role, issuedAt, expiration };
   } else {
     return null; // Return null if no user data is found in localStorage
   }

@@ -8,11 +8,11 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 // project imports
-import AuthWrapper1 from '../AuthWrapper1';
-import AuthCardWrapper from '../AuthCardWrapper';
-import Logo from 'ui-component/Logo';
-import AuthRegister from '../authentication/auth-forms/AuthRegister';
 import AuthFooter from 'ui-component/cards/AuthFooter';
+// import Logo from 'ui-component/Logo';
+import AuthCardWrapper from '../AuthCardWrapper';
+import AuthRegister from '../authentication/auth-forms/AuthRegister';
+import AuthWrapper1 from '../AuthWrapper1';
 
 // assets
 
@@ -29,11 +29,11 @@ const Register = () => {
             <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
               <AuthCardWrapper>
                 <Grid container spacing={2} alignItems="center" justifyContent="center">
-                  <Grid item sx={{ mb: 3 }}>
+                  {/* <Grid item sx={{ mb: 3 }}>
                     <Link to="#" aria-label="theme logo">
                       <Logo />
                     </Link>
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12}>
                     <Grid container direction={{ xs: 'column-reverse', md: 'row' }} alignItems="center" justifyContent="center">
                       <Grid item>

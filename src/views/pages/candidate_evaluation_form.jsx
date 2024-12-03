@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import Alert from '@mui/material/Alert';
 import { useEffect, useState } from 'react';
-import { getUserData } from '../../context/userContext';
+import { getUserData } from '../../context/UserContext';
 import { addEvaluationForm, getSubmittedByUser } from '../../services/ApiServices';
 import Form from '../utilities/Form';
 

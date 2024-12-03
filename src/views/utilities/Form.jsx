@@ -1,65 +1,37 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const Form = ({ fields, onSubmit, formStyle = {}, rowsConfig = [], resetAfterSubmit }) => {
-  // Initialize form data from the fields provided
-  const [formValues, setFormValues] = useState(
-    fields.reduce((acc, field) => {
-      acc[field.name] = field.defaultValue || ''; // Use defaultValue if available
-      return acc;
-    }, {})
-  );
-
-  // Handle field value changes
-  const handleChange = (name, value) => {
-    setFormValues((prev) => {
-      const updatedValues = { ...prev, [name]: value };
-
-      const calculateTotalMarks = () => {
-        const fieldsToSum = ['attire_body_language', 'work_knowledge', 'team_player', 'problem_solving_skill', 'communication_skill'];
-
-        return fieldsToSum.reduce((total, field) => {
-          const fieldValue = parseFloat(updatedValues[field]) || 0;
-          return total + fieldValue;
-        }, 0);
-      };
-
-      const calculatePerformance = (totalMarks) => {
-        if (totalMarks >= 45 && totalMarks <= 50) return 'Outstanding';
-        if (totalMarks >= 31 && totalMarks <= 44) return 'Good';
-        if (totalMarks >= 23 && totalMarks <= 30) return 'Average';
-        if (totalMarks >= 17 && totalMarks <= 22) return 'Fair';
-        return 'Poor';
-      };
-
-      if (['attire_body_language', 'work_knowledge', 'team_player', 'problem_solving_skill', 'communication_skill'].includes(name)) {
-        updatedValues.total_marks = calculateTotalMarks();
-        updatedValues.performance = calculatePerformance(updatedValues.total_marks);
-        updatedValues.average_marks = updatedValues.total_marks / 5;
+const Form = ({ fields, initialValues, onFormChange, onSubmit, resetAfterSubmit, rowsConfig }) => {
+  const [formValues, setFormValues] = useState(() => {
+    const defaultValues = fields.reduce((acc, field) => {
+      if (field.defaultValue !== undefined) {
+        acc[field.name] = field.defaultValue;
       }
+      return acc;
+    }, {});
+    return { ...defaultValues, ...initialValues };
+  });
 
-      return updatedValues;
-    });
+  useEffect(() => {
+    if (initialValues) {
+      const updatedValues = { ...formValues, ...initialValues };
+      setFormValues(updatedValues); // Sync with initial values
+    }
+  }, [initialValues]);
+
+  const handleChange = (name, value) => {
+    const updatedValues = { ...formValues, [name]: value };
+    setFormValues(updatedValues);
+    if (onFormChange) onFormChange(updatedValues); // Notify parent of changes
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formValues); // Submit the form
-    if (resetAfterSubmit) resetForm(); // Reset form if needed after submission
+    onSubmit(formValues); // Submit all form data
+    if (resetAfterSubmit) setFormValues({}); // Reset form after submit
   };
 
-  // Reset the form to its initial values
-  const resetForm = () => {
-    setFormValues(
-      fields.reduce((acc, field) => {
-        acc[field.name] = field.defaultValue || ''; // Reset to default value or empty
-        return acc;
-      }, {})
-    );
-  };
-
-  // Styles
   const responsiveStyles = {
     form: {
       display: 'flex',
@@ -85,15 +57,6 @@ const Form = ({ fields, onSubmit, formStyle = {}, rowsConfig = [], resetAfterSub
     },
     label: { fontWeight: 'bold', fontSize: '14px', textAlign: 'left' },
     input: { padding: '10px', width: '100%', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' },
-    value: {
-      flex: '1',
-      fontSize: '14px',
-      color: '#333',
-      padding: '10px',
-      backgroundColor: '#f9f9f9',
-      border: '1px solid #ddd',
-      borderRadius: '4px'
-    },
     button: {
       padding: '15px',
       marginTop: '15px',
@@ -108,7 +71,6 @@ const Form = ({ fields, onSubmit, formStyle = {}, rowsConfig = [], resetAfterSub
     }
   };
 
-  // Group fields based on rowsConfig
   const groupFieldsByRows = (fields, rowsConfig) => {
     const groupedRows = [];
     let index = 0;
@@ -126,20 +88,14 @@ const Form = ({ fields, onSubmit, formStyle = {}, rowsConfig = [], resetAfterSub
     return groupedRows;
   };
 
-  const groupedFields = groupFieldsByRows(fields, rowsConfig);
+  const groupedFields = groupFieldsByRows(fields, rowsConfig || [fields.length]);
 
   return (
-    <form onSubmit={handleSubmit} style={{ ...responsiveStyles.form, ...formStyle }}>
-      {groupedFields.map((row, rowIndex) => (
-        <div key={rowIndex} style={{ ...responsiveStyles.row }}>
-          {row.map((field, fieldIndex) => (
-            <div
-              key={fieldIndex}
-              style={{
-                ...responsiveStyles.field,
-                flex: row.length === 1 ? '1 1 100%' : '1 1 calc(100% / ' + row.length + ' - 15px)'
-              }}
-            >
+    <form onSubmit={handleSubmit} style={responsiveStyles.form}>
+      {groupedFields.map((rowFields, rowIndex) => (
+        <div key={rowIndex} style={responsiveStyles.row}>
+          {rowFields.map((field, fieldIndex) => (
+            <div key={fieldIndex} style={responsiveStyles.field}>
               <label style={responsiveStyles.label}>{field.label}</label>
               {field.type === 'select' ? (
                 <select
@@ -147,28 +103,20 @@ const Form = ({ fields, onSubmit, formStyle = {}, rowsConfig = [], resetAfterSub
                   value={formValues[field.name] || ''}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   style={responsiveStyles.input}
-                  required={field.required || false}
                 >
-                  <option value="" disabled>
-                    {field.placeholder || 'Select an option'}
-                  </option>
-                  {field.options.map((option, optionIndex) => (
-                    <option key={optionIndex} value={option.value}>
+                  {field.options.map((option, idx) => (
+                    <option key={idx} value={option.value}>
                       {option.label}
                     </option>
                   ))}
                 </select>
-              ) : field.readOnly ? (
-                <div style={responsiveStyles.value}>
-                  {formValues[field.name] !== undefined && formValues[field.name] !== '' ? formValues[field.name] : 'N/A'}
-                </div>
               ) : (
                 <input
                   type={field.type}
                   name={field.name}
                   value={formValues[field.name] || ''}
-                  placeholder={field.placeholder || ''}
-                  required={field.required || false}
+                  placeholder={field.placeholder}
+                  readOnly={field.readOnly || false}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   style={responsiveStyles.input}
                 />

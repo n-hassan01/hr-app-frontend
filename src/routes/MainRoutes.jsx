@@ -1,7 +1,6 @@
 import { lazy } from 'react';
 // Project imports
 import MainLayout from 'layout/MainLayout';
-import { Navigate } from 'react-router-dom';
 import Loadable from 'ui-component/Loadable';
 import ProtectedRoute from '../routes/ProtectedRoutes'; // Import the ProtectedRoute
 
@@ -20,10 +19,10 @@ const MainRoutes = {
   path: '/',
   element: <MainLayout />,
   children: [
-    {
-      path: '/',
-      element: <Navigate to="/pages/login/login3" replace /> // Default to login if no user
-    },
+    // {
+    //   path: '/',
+    //   element: <Navigate to="/pages/login/login3" replace /> // Default to login if no user
+    // },
 
     // Protected Routes
     {

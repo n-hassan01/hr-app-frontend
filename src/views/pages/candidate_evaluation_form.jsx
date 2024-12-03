@@ -1,93 +1,52 @@
 /* eslint-disable no-unused-vars */
-import Alert from '@mui/material/Alert';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { getUserData } from '../../context/UserContext';
-import { addEvaluationForm, getSubmittedByUser } from '../../services/ApiServices';
+import { addEvaluationForm } from '../../services/ApiServices';
 import Form from '../utilities/Form';
 
 export default function EvaluationFormPage() {
-  // Get user data (token, username)
-  // Pass user.token for getting user
   const user = getUserData();
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertSeverity, setAlertSeverity] = useState('success');
+  const [formData, setFormData] = useState({});
 
-  // get login user info api
-  // Pass user.token for getting user
-  const [getLoginUserInfo, setLoginUserInfo] = useState([]);
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        let response = {};
-        if (user) response = await getSubmittedByUser(user.token);
-        console.log(response);
+  // Calculate derived fields when form data changes
+  const calculateDerivedFields = (data) => {
+    const fieldsToSum = ['attire_body_language', 'work_knowledge', 'team_player', 'problem_solving_skill', 'communication_skill'];
 
-        if (response.status === 200) setLoginUserInfo(response.data.data.userId);
-      } catch (error) {
-        console.error('Error fetching account details:', error);
-      }
-    }
+    const totalMarks = fieldsToSum.reduce((total, field) => total + (parseFloat(data[field]) || 0), 0);
+    const performance =
+      totalMarks >= 45 ? 'Outstanding' : totalMarks >= 31 ? 'Good' : totalMarks >= 23 ? 'Average' : totalMarks >= 17 ? 'Fair' : 'Poor';
 
-    fetchData();
-  }, [user]);
-  console.log(getLoginUserInfo);
+    return {
+      ...data,
+      total_marks: totalMarks,
+      average_marks: totalMarks / fieldsToSum.length,
+      performance
+    };
+  };
 
-  // get all evaluations api calling
-  // const [evaluationsAll, setEvaluationsAll] = useState([]);
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     try {
-  //       let response = {};
-  //       if (user) response = await getEvaluationforAll(user);
-  //       if (response.status === 200) setEvaluationsAll(response.data);
-  //     } catch (error) {
-  //       console.error('Error fetching account details:', error);
-  //     }
-  //   }
+  const handleFormChange = (data) => {
+    const updatedData = calculateDerivedFields(data); // Calculate derived fields
+    setFormData(updatedData); // Update state with new data
+  };
 
-  //   fetchData();
-  // }, [user]);
-  // console.log(evaluationsAll);
-
-  // Adding evaluation data
   const handleSubmit = async (data) => {
-    console.log('Form Data:', data);
+    console.log('Submitted Data:', data);
 
     const requestBody = {
-      key: {
-        candidateNumber: 1,
-        submittedBy: getLoginUserInfo
-      },
+      key: { candidateNumber: 1, submittedBy: user?.id },
       submittedDate: new Date(),
-      attireBodyLanguage: data.attire_body_language,
-      workKnowledge: data.work_knowledge,
-      teamPlayer: data.team_player,
-      problemSolvingSkill: data.problem_solving_skill,
-      communicationSkill: data.communication_skill,
-      outOfMarks: data.out_of_marks,
-      totalMarks: data.total_marks,
-      avgMarks: data.average_marks,
-      performance: data.performance
+      ...data
     };
-
-    console.log('Request Body:', requestBody);
 
     try {
       const response = await addEvaluationForm(requestBody, user.token);
       if (response.status === 200) {
-        setAlertMessage('Data Saved Successfully');
-        setAlertSeverity('success');
-        setTimeout(() => {
-          setAlertMessage('');
-        }, 1000);
+        alert('Data Saved Successfully');
       } else {
-        setAlertMessage('Process failed! Try again');
-        setAlertSeverity('error');
+        alert('Process failed! Try again');
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      setAlertMessage('An error occurred! Please try again.');
-      setAlertSeverity('error');
+      alert('An error occurred! Please try again.');
     }
   };
 
@@ -97,7 +56,7 @@ export default function EvaluationFormPage() {
       name: 'candidate_number',
       type: 'select',
       options: [
-        { value: 'Select Any Option', label: 'Select Any Option' },
+        { value: '', label: 'Select Any Option' },
         { value: 'candidate1', label: 'Candidate 1' },
         { value: 'candidate2', label: 'Candidate 2' },
         { value: 'candidate3', label: 'Candidate 3' }
@@ -115,20 +74,15 @@ export default function EvaluationFormPage() {
   ];
 
   return (
-    <>
-      {alertMessage && (
-        <Alert variant="filled" severity={alertSeverity}>
-          {alertMessage}
-        </Alert>
-      )}
-      <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
-        <Form
-          fields={fields}
-          rowsConfig={[2, 3, 3, 2]}
-          onSubmit={handleSubmit}
-          resetAfterSubmit={true} // Ensures the form resets after a successful submission
-        />
-      </div>
-    </>
+    <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
+      <Form
+        fields={fields}
+        initialValues={formData} // Pass the form data, including calculated fields
+        rowsConfig={[2, 3, 3, 2]}
+        onFormChange={handleFormChange} // Update calculations when inputs change
+        onSubmit={handleSubmit} // Handle final submission
+        resetAfterSubmit={true}
+      />
+    </div>
   );
 }

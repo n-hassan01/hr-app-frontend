@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Navigate } from 'react-router-dom';
-import { getUserData } from '../context/userContext';
+import { getUserData } from '../context/UserContext';
 
 const ProtectedRoute = ({ children }) => {
   const user = getUserData(); // Get user data from context or localStorage

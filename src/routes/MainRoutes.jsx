@@ -17,7 +17,11 @@ const CandidateEvalution = Loadable(lazy(() => import('views/pages/candidate_eva
 
 const MainRoutes = {
   path: '/',
-  element: <MainLayout />,
+  element: (
+    <ProtectedRoute>
+      <MainLayout />
+    </ProtectedRoute>
+  ),
   children: [
     // {
     //   path: '/',
@@ -27,73 +31,41 @@ const MainRoutes = {
     // Protected Routes
     {
       path: 'dashboard',
-      element: (
-        <ProtectedRoute>
-          <DashboardDefault />
-        </ProtectedRoute>
-      ),
+      element: <DashboardDefault />,
       children: [
         {
           path: 'default',
-          element: (
-            <ProtectedRoute>
-              <DashboardDefault />
-            </ProtectedRoute>
-          )
+          element: <DashboardDefault />
         }
       ]
     },
 
     {
       path: 'utils',
-      element: (
-        <ProtectedRoute>
-          <UtilsTypography />
-        </ProtectedRoute>
-      ),
+      element: <UtilsTypography />,
       children: [
         {
           path: 'util-typography',
-          element: (
-            <ProtectedRoute>
-              <UtilsTypography />
-            </ProtectedRoute>
-          )
+          element: <UtilsTypography />
         },
         {
           path: 'util-color',
-          element: (
-            <ProtectedRoute>
-              <UtilsColor />
-            </ProtectedRoute>
-          )
+          element: <UtilsColor />
         },
         {
           path: 'data-table',
-          element: (
-            <ProtectedRoute>
-              <DataTable />
-            </ProtectedRoute>
-          )
+          element: <DataTable />
         },
         {
           path: 'util-shadow',
-          element: (
-            <ProtectedRoute>
-              <UtilsShadow />
-            </ProtectedRoute>
-          )
+          element: <UtilsShadow />
         }
       ]
     },
 
     {
       path: 'candidate-evaluation',
-      element: (
-        <ProtectedRoute>
-          <CandidateEvalution />
-        </ProtectedRoute>
-      )
+      element: <CandidateEvalution />
     },
 
     {

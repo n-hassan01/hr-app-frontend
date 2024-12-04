@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import Alert from '@mui/material/Alert';
 import { useState } from 'react';
 import { getUserData } from '../../context/UserContext';
 import { addEvaluationForm, getCandidateList } from '../../services/ApiServices';
@@ -7,6 +8,8 @@ import Form from '../utilities/Form';
 export default function EvaluationFormPage() {
   const user = getUserData();
   const [formData, setFormData] = useState({});
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState('success');
 
   // Calculate derived fields when form data changes
   const calculateDerivedFields = (data) => {
@@ -44,17 +47,12 @@ export default function EvaluationFormPage() {
   };
 
   const handleFormChange = async (data) => {
-    console.log(data);
-
     const updatedData = calculateDerivedFields(data); // Calculate derived fields
+    setFormData(updatedData);
     //const candidateData = getCandidateData(data); // Update state with new data
-    // console.log(candidateData);
   };
-  console.log(formData);
 
   const handleSubmit = async (data) => {
-    console.log('Submitted Data:', data);
-
     const requestBody = {
       key: { candidateNumber: 1, submittedBy: user?.id },
       submittedDate: new Date(),
@@ -64,9 +62,17 @@ export default function EvaluationFormPage() {
     try {
       const response = await addEvaluationForm(requestBody, user.token);
       if (response.status === 200) {
-        alert('Data Saved Successfully');
+        setAlertMessage('Data Saved Successfully');
+        setAlertSeverity('success');
+        setTimeout(() => {
+          setAlertMessage('');
+        }, 1000);
       } else {
-        alert('Process failed! Try again');
+        setAlertMessage('Process failed! Try again');
+        setAlertSeverity('error');
+        setTimeout(() => {
+          setAlertMessage('');
+        }, 1000);
       }
     } catch (error) {
       alert('An error occurred! Please try again.');
@@ -98,15 +104,22 @@ export default function EvaluationFormPage() {
     { label: 'Average Marks', name: 'average_marks', type: 'number', placeholder: 'Average Marks', readOnly: true }
   ];
   return (
-    <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
-      <Form
-        fields={fields}
-        initialValues={formData} // Pass the form data, including calculated fields
-        rowsConfig={[3, 3, 3, 2]}
-        onFormChange={handleFormChange} // Update calculations when inputs change
-        onSubmit={handleSubmit} // Handle final submission
-        resetAfterSubmit={true}
-      />
-    </div>
+    <>
+      {alertMessage && (
+        <Alert variant="filled" severity={alertSeverity}>
+          {alertMessage}
+        </Alert>
+      )}
+      <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
+        <Form
+          fields={fields}
+          initialValues={formData} // Pass the form data, including calculated fields
+          rowsConfig={[3, 3, 3, 2]}
+          onFormChange={handleFormChange} // Update calculations when inputs change
+          onSubmit={handleSubmit} // Handle final submission
+          resetAfterSubmit={true}
+        />
+      </div>
+    </>
   );
 }

@@ -30,13 +30,13 @@ export default defineConfig({
     // this ensures that the browser opens upon server start
     open: true,
     // this sets a default port to 8082
-    port: 8082
+    port: process.env.RUNNING_PORT || 8082
   },
   preview: {
     host: '0.0.0.0',
     // this ensures that the browser opens upon server start
     open: true,
     // this sets a default port to 8082
-    port: 8082
+    port: process.env.RUNNING_PORT || 8082
   }
 });

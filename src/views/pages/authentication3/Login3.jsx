@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Link } from 'react-router-dom';
 
 // material-ui
@@ -8,10 +9,10 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 // project imports
-import AuthWrapper1 from '../AuthWrapper1';
 import AuthCardWrapper from '../AuthCardWrapper';
 import AuthLogin from '../authentication/auth-forms/AuthLogin';
-import Logo from 'ui-component/Logo';
+import AuthWrapper1 from '../AuthWrapper1';
+// import Logo from 'ui-component/Logo';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 
 // ================================|| AUTH3 - LOGIN ||================================ //
@@ -27,11 +28,11 @@ const Login = () => {
             <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
               <AuthCardWrapper>
                 <Grid container spacing={2} alignItems="center" justifyContent="center">
-                  <Grid item sx={{ mb: 3 }}>
+                  {/* <Grid item sx={{ mb: 3 }}>
                     <Link to="#" aria-label="logo">
                       <Logo />
                     </Link>
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12}>
                     <Grid container direction={{ xs: 'column-reverse', md: 'row' }} alignItems="center" justifyContent="center">
                       <Grid item>

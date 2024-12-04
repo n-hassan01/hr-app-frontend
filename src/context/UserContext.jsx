@@ -1,51 +1,25 @@
-/* eslint-disable react/prop-types */
-import { createContext, useContext, useEffect, useState } from 'react';
+// src/utils/userUtils.js
 
-const UserContext = createContext();
-export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    // Initialize user state with the value from localStorage
-    const storedUser = localStorage.getItem('user');
-    console.log(storedUser);
+export const getUserData = () => {
+  const storedUser = localStorage.getItem('user');
+  if (storedUser) {
+    const parsedUser = JSON.parse(storedUser);
+    const token = parsedUser.data;
+    console.log(token);
 
-    try {
-      const parsedUser = JSON.parse(storedUser);
-      console.log(parsedUser);
+    // Decode the JWT payload
+    const base64Payload = token.split('.')[1];
+    const decodedPayload = atob(base64Payload);
+    const payloadObject = JSON.parse(decodedPayload);
 
-      return parsedUser;
-    } catch (error) {
-      console.error('Error parsing user data from localStorage:', error);
-      return null;
-    }
-  });
+    // Extract specific details
+    const username = payloadObject.sub;
+    const role = payloadObject.role;
+    const issuedAt = new Date(payloadObject.iat * 1000);
+    const expiration = new Date(payloadObject.exp * 1000);
 
-  const loginUser = (userInfo) => {
-    console.log(userInfo);
-
-    setUser(userInfo);
-    // Save user information to localStorage
-    // localStorage.setItem('user', JSON.stringify(userInfo));
-    // const storedUser = localStorage.getItem('user');
-    // console.log(storedUser);
-    // const parsedUser = JSON.parse(storedUser);
-    // console.log(parsedUser);
-  };
-
-  const logoutUser = () => {
-    setUser(null);
-    // Remove user information from localStorage
-    localStorage.removeItem('user');
-  };
-
-  // Optional: If you want to clear localStorage on component unmount
-  useEffect(
-    () => () => {
-      localStorage.removeItem('user');
-    },
-    []
-  );
-
-  return <UserContext.Provider value={{ user, loginUser, logoutUser }}>{children}</UserContext.Provider>;
+    return { token, username, role, issuedAt, expiration };
+  } else {
+    return null; // Return null if no user data is found in localStorage
+  }
 };
-
-export const useUser = () => useContext(UserContext);

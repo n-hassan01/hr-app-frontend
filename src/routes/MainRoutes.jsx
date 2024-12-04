@@ -11,7 +11,8 @@ const DataTable = Loadable(lazy(() => import('views/utilities/DataTable')));
 const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
 const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
-const CandidateEvalution = Loadable(lazy(() => import('views/pages/candidate_evaluation_form')));
+const CandidateEvalution = Loadable(lazy(() => import('views/pages/candidateEvaluationForm')));
+const FormTabsPage = Loadable(lazy(() => import('views/pages/hr/FormTabsPage')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -67,7 +68,10 @@ const MainRoutes = {
       path: 'candidate-evaluation',
       element: <CandidateEvalution />
     },
-
+    {
+      path: 'hr-entry-form',
+      element: <FormTabsPage />
+    },
     {
       path: 'sample-page',
       element: <SamplePage /> // No authentication required for this route

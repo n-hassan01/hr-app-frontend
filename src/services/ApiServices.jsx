@@ -67,3 +67,13 @@ export const signUpForm = async (bodyInfo) => {
     return err.message;
   }
 };
+
+export const getCandidateList = async (date) => {
+  try {
+    return await axios.get(`${usersUrl}api/candidates/byDate?city=${date}`);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};

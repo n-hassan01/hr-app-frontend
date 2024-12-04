@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { getUserData } from '../../context/UserContext';
-import { addEvaluationForm } from '../../services/ApiServices';
+import { addEvaluationForm, getCandidateList } from '../../services/ApiServices';
 import Form from '../utilities/Form';
 
 export default function EvaluationFormPage() {
@@ -24,10 +24,33 @@ export default function EvaluationFormPage() {
     };
   };
 
-  const handleFormChange = (data) => {
-    const updatedData = calculateDerivedFields(data); // Calculate derived fields
-    setFormData(updatedData); // Update state with new data
+  const getCandidateData = async (data) => {
+    const { date_of_evaluation } = data;
+
+    // Log the date_of_evaluation and the calculated values
+    console.log('Date of Evaluation:', date_of_evaluation);
+
+    const response = await getCandidateList(date_of_evaluation);
+    console.log(response);
+
+    if (response.status === 200) {
+      alert('Data Saved Successfully');
+    } else {
+      alert('Process failed! Try again');
+    }
+    return {
+      response
+    };
   };
+
+  const handleFormChange = async (data) => {
+    console.log(data);
+
+    const updatedData = calculateDerivedFields(data); // Calculate derived fields
+    //const candidateData = getCandidateData(data); // Update state with new data
+    // console.log(candidateData);
+  };
+  console.log(formData);
 
   const handleSubmit = async (data) => {
     console.log('Submitted Data:', data);
@@ -51,6 +74,8 @@ export default function EvaluationFormPage() {
   };
 
   const fields = [
+    { label: 'Date of Evaluation', name: 'date_of_evaluation', type: 'date', placeholder: 'Select Date' }, // New date field
+
     {
       label: 'Candidate Number',
       name: 'candidate_number',
@@ -72,13 +97,12 @@ export default function EvaluationFormPage() {
     { label: 'Performance', name: 'performance', type: 'text', placeholder: 'Enter Performance', readOnly: true },
     { label: 'Average Marks', name: 'average_marks', type: 'number', placeholder: 'Average Marks', readOnly: true }
   ];
-
   return (
     <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
       <Form
         fields={fields}
         initialValues={formData} // Pass the form data, including calculated fields
-        rowsConfig={[2, 3, 3, 2]}
+        rowsConfig={[3, 3, 3, 2]}
         onFormChange={handleFormChange} // Update calculations when inputs change
         onSubmit={handleSubmit} // Handle final submission
         resetAfterSubmit={true}

@@ -35,10 +35,10 @@ const utilities = {
         },
         {
             id: 'util-color',
-            title: 'Color',
+            title: 'HR Entry Form',
             type: 'item',
-            url: '/utils/util-color',
-            icon: icons.IconPalette,
+            url: 'hr-entry-form',
+            icon: icons.IconTypography,
             breadcrumbs: false
         },
         {

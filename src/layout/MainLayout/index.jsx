@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Outlet } from 'react-router-dom';
 
 // material-ui
 import AppBar from '@mui/material/AppBar';
@@ -9,12 +9,12 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 // project imports
 import { CssBaseline, styled, useTheme } from '@mui/material';
-import Header from './Header';
-import Sidebar from './Sidebar';
-import Customization from '../Customization';
-import Breadcrumbs from 'ui-component/extended/Breadcrumbs';
 import { SET_MENU } from 'store/actions';
 import { drawerWidth } from 'store/constant';
+import Breadcrumbs from 'ui-component/extended/Breadcrumbs';
+import Customization from '../Customization';
+import Header from './Header';
+import Sidebar from './Sidebar';
 
 // assets
 import { IconChevronRight } from '@tabler/icons-react';
@@ -89,7 +89,7 @@ const MainLayout = () => {
       {/* main content */}
       <Main theme={theme} open={leftDrawerOpened}>
         {/* breadcrumb */}
-        <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+        <Breadcrumbs separator={IconChevronRight} icon title rightAlign />
         <Outlet />
       </Main>
       <Customization />

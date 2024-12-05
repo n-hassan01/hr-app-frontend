@@ -67,3 +67,34 @@ export const signUpForm = async (bodyInfo) => {
     return err.message;
   }
 };
+
+// candidate services
+export const addCandidateInfoService = async (bodyInfo) => {
+  try {
+    return await axios.post(`${usersUrl}api/candidates/add`, bodyInfo);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const addCandidateExperienceInfoService = async (bodyInfo) => {
+  try {
+    return await axios.post(`${usersUrl}api/experience/add`, bodyInfo);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const addCandidateFacilitiesInfoService = async (bodyInfo) => {
+  try {
+    return await axios.post(`${usersUrl}api/facilities/add`, bodyInfo);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};

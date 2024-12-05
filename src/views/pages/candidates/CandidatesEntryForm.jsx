@@ -1,88 +1,320 @@
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
-import { getUserData } from '../../../context/UserContext';
-import { addEvaluationForm } from '../../../services/ApiServices';
 import Form from '../../utilities/Form';
 
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+// api services
+import {
+  addCandidateExperienceInfoService,
+  addCandidateFacilitiesInfoService,
+  addCandidateInfoService
+} from '../../../services/ApiServices';
+
 export default function EvaluationFormPage() {
-  const user = getUserData();
   const [formData, setFormData] = useState({});
-
-  // Calculate derived fields when form data changes
-  const calculateDerivedFields = (data) => {
-    const fieldsToSum = ['attire_body_language', 'work_knowledge', 'team_player', 'problem_solving_skill', 'communication_skill'];
-
-    const totalMarks = fieldsToSum.reduce((total, field) => total + (parseFloat(data[field]) || 0), 0);
-    const performance =
-      totalMarks >= 45 ? 'Outstanding' : totalMarks >= 31 ? 'Good' : totalMarks >= 23 ? 'Average' : totalMarks >= 17 ? 'Fair' : 'Poor';
-
-    return {
-      ...data,
-      total_marks: totalMarks,
-      average_marks: totalMarks / fieldsToSum.length,
-      performance
-    };
-  };
-
-  const handleFormChange = (data) => {
-    const updatedData = calculateDerivedFields(data); // Calculate derived fields
-    setFormData(updatedData); // Update state with new data
-  };
-
-  const handleSubmit = async (data) => {
-    console.log('Submitted Data:', data);
-
-    const requestBody = {
-      key: { candidateNumber: 1, submittedBy: user?.id },
-      submittedDate: new Date(),
-      ...data
-    };
-
-    try {
-      const response = await addEvaluationForm(requestBody, user.token);
-      if (response.status === 200) {
-        alert('Data Saved Successfully');
-      } else {
-        alert('Process failed! Try again');
-      }
-    } catch (error) {
-      alert('An error occurred! Please try again.');
-    }
-  };
+  const [candidate, setCandidate] = useState({});
+  const [showExperienceForm, setShowExperienceForm] = useState(false);
+  const [candidateExperienceList, setCandidateExperienceList] = useState([{ experienceField: '', organization: '', years: '' }]);
 
   const fields = [
     {
       label: 'Candidate Number',
-      name: 'candidate_number',
-      type: 'select',
-      options: [
-        { value: '', label: 'Select Any Option' },
-        { value: 'candidate1', label: 'Candidate 1' },
-        { value: 'candidate2', label: 'Candidate 2' },
-        { value: 'candidate3', label: 'Candidate 3' }
-      ]
+      name: 'candidateNumber',
+      type: 'text',
+      readOnly: true
     },
-    { label: 'Out of Marks', name: 'out_of_marks', type: 'number', placeholder: 'Out of Marks', defaultValue: 10 },
-    { label: 'Attire Body Language', name: 'attire_body_language', type: 'number', placeholder: 'Attire Body Language' },
-    { label: 'Work Knowledge', name: 'work_knowledge', type: 'number', placeholder: 'Enter Work Knowledge' },
-    { label: 'Team Player', name: 'team_player', type: 'number', placeholder: 'Team Player' },
-    { label: 'Problem Solving Skill', name: 'problem_solving_skill', type: 'number', placeholder: 'Problem Solving Skill' },
-    { label: 'Communication Skill', name: 'communication_skill', type: 'number', placeholder: 'Communication Skill' },
-    { label: 'Total Marks', name: 'total_marks', type: 'number', placeholder: 'Total Marks', readOnly: true },
-    { label: 'Performance', name: 'performance', type: 'text', placeholder: 'Enter Performance', readOnly: true },
-    { label: 'Average Marks', name: 'average_marks', type: 'number', placeholder: 'Average Marks', readOnly: true }
+    { label: 'Interview Date', name: 'interviewDate', type: 'date' },
+
+    { label: 'Full name', name: 'fullName', type: 'text' },
+    { label: 'NID number', name: 'nidNumber', type: 'text' },
+    { label: 'Age', name: 'age', type: 'text' },
+
+    { label: 'Email address', name: 'email', type: 'text', placeholder: 'example@gmail.com' },
+    { label: 'Contact number', name: 'contactNumber', type: 'text' },
+
+    { label: 'Present address', name: 'presentAddress', type: 'text' },
+    { label: 'Permanent address', name: 'permanentAddress', type: 'text' },
+
+    { label: 'Last education exam', name: 'lastEducationExam', type: 'text' },
+    { label: 'Last education subject', name: 'lastEducationSubject', type: 'text' },
+    { label: 'Last education institute', name: 'lastEducationInstitute', type: 'text' },
+    { label: 'Last education year', name: 'lastEducationYear', type: 'text' },
+    { label: 'Last education result', name: 'lastEducationResult', type: 'text' },
+
+    { label: 'Father name', name: 'fatherName', type: 'text' },
+    { label: 'Mother name', name: 'motherName', type: 'text' },
+    { label: 'Number of siblings', name: 'numberOfSiblings', type: 'number' },
+
+    { label: 'Have reference', name: 'haveReference', type: 'checkbox' },
+    { label: 'Reference name', name: 'ReferenceName', type: 'text' },
+    { label: 'Reference relation', name: 'referenceRelation', type: 'text' },
+    { label: 'Reference designation', name: 'referenceDesignation', type: 'text' },
+
+    { label: 'Company', name: 'company', type: 'text', placeholder: 'enter your current company' },
+    { label: 'SBU', name: 'sbu', type: 'text', placeholder: 'enter your current sbu' },
+    { label: 'Department', name: 'department', type: 'text', placeholder: 'enter your current department' },
+    { label: 'Reports to', name: 'reportsTo', type: 'text', placeholder: 'enter your current reports to' },
+    { label: 'Designation', name: 'designation', type: 'text', placeholder: 'enter your current designation' },
+
+    { label: 'Salary', name: 'salary', type: 'text', placeholder: 'enter your current salary' },
+    { label: 'Bonus', name: 'bonus', type: 'text', placeholder: 'enter your current bonus' },
+    { label: 'TA/Conveyance', name: 'taOrConveyance', type: 'text', placeholder: 'enter your current TA' },
+    { label: 'DA/food', name: 'daOrFood', type: 'text', placeholder: 'enter your current DA' },
+    { label: 'Benefit/Allowance', name: 'benefitOrAllowance', type: 'text', placeholder: 'enter your current allowance' },
+
+    { label: 'PF/Gratuity', name: 'pfOrGratuity', type: 'text', placeholder: 'enter your current PF or Gratuity' },
+    { label: 'Transport facility', name: 'transportFacility', type: 'text', placeholder: 'enter your current transport facility' },
+    { label: 'Incentive/KPI', name: 'incentiveOrKpi', type: 'text', placeholder: 'enter your current incentive' },
+    { label: 'Mobile ceiling', name: 'mobileCeiling', type: 'text', placeholder: 'enter your current mobile ceiling' },
+    { label: 'Total CTC', name: 'totalCtc', type: 'text', placeholder: 'enter your current total ctc' },
+
+    { label: 'Interested to join', name: 'interestedToJoin', type: 'checkbox' },
+    { label: 'bond 2 Years', name: 'bond2Years', type: 'checkbox' },
+    { label: 'Bond 5 years', name: 'bond5Years', type: 'checkbox' },
+    { label: 'Have passport', name: 'havePassport', type: 'checkbox' },
+    { label: 'Have driving license', name: 'haveDrivingLicense', type: 'checkbox' },
+
+    { label: 'Work anywhere in BD', name: 'workAnywhereInBd', type: 'checkbox' },
+    { label: 'Work at factory', name: 'workAtFactory', type: 'checkbox' },
+    { label: 'Operate computer', name: 'operateComp', type: 'checkbox' },
+    { label: 'Agreed terms', name: 'agreedTerms', type: 'checkbox' },
+    { label: 'Have experiences', name: 'haveExperiences', type: 'checkbox' }
   ];
 
+  const experienceFields = [
+    { label: 'Experience field', name: 'experienceField', type: 'text' },
+    { label: 'Organization', name: 'organization', type: 'text' },
+    { label: 'Years', name: 'years', type: 'text' }
+  ];
+
+  const handleSubmit = async (data) => {
+    try {
+      // Format interviewDate to support LocalDateTime object if it exists
+      const formattedDate = data.interviewDate ? new Date(data.interviewDate).toISOString() : null;
+
+      const candidateRequestBody = {
+        age: data.age ?? '',
+        email: data.email ?? '',
+        contactNumber: data.contactNumber ?? '',
+        nidNumber: data.nidNumber ?? '',
+        presentAddress: data.presentAddress ?? '',
+        permanentAddress: data.permanentAddress ?? '',
+        lastEducationExam: data.lastEducationExam ?? '',
+        lastEducationSubject: data.lastEducationSubject ?? '',
+        lastEducationInstitute: data.lastEducationInstitute ?? '',
+        lastEducationYear: data.lastEducationYear ?? '',
+        lastEducationResult: data.lastEducationResult ?? '',
+        fatherName: data.fatherName ?? '',
+        motherName: data.motherName ?? '',
+        numberOfSiblings: data.numberOfSiblings ?? null,
+        referenceRelation: data.referenceRelation ?? '',
+        referenceDesignation: data.referenceDesignation ?? '',
+        haveReference: !!data.haveReference,
+        interviewDate: formattedDate,
+        interestedToJoin: !!data.interestedToJoin,
+        bond2Years: !!data.bond2Years,
+        bond5Years: !!data.bond5Years,
+        havePassport: !!data.havePassport,
+        haveDrivingLicense: !!data.haveDrivingLicense,
+        workAnywhereInBd: !!data.workAnywhereInBd,
+        workAtFactory: !!data.workAtFactory,
+        operateComp: !!data.operateComp,
+        agreedTerms: !!data.agreedTerms,
+        haveExperiences: data.haveExperiences ?? null,
+        experiences: data.experiences ?? [],
+        facilitiesInfo: data.facilitiesInfo ?? [],
+        evaluationInfo: data.evaluationInfo ?? [],
+        fullName: data.fullName ?? '',
+        referenceName: data.referenceName ?? ''
+      };
+
+      const candidateResponse = await addCandidateInfoService(candidateRequestBody);
+
+      if (candidateResponse?.data?.statusCode === 200) {
+        const facilitiesRequestBody = {
+          facilityType: 'CURRENT',
+          company: data.company ?? '',
+          sbu: data.sbu ?? '',
+          department: data.department ?? '',
+          jobGrade: data.jobGrade ?? '',
+          reportsTo: data.reportsTo ?? '',
+          jobLocation: data.jobLocation ?? '',
+          designation: data.designation ?? '',
+          salary: data.salary ?? null,
+          bonus: data.bonus ?? '',
+          taOrConveyance: data.taOrConveyance ?? '',
+          daOrFood: data.daOrFood ?? '',
+          benefitOrAllowance: data.benefitOrAllowance ?? '',
+          pfOrGratuity: data.pfOrGratuity ?? '',
+          transportFacility: data.transportFacility ?? '',
+          incentiveOrKpi: data.incentiveOrKpi ?? '',
+          mobileCeiling: data.mobileCeiling ?? '',
+          totalCtc: data.totalCtc ?? '',
+          candidate: candidateResponse.data.data
+        };
+        await addCandidateFacilitiesInfoService(facilitiesRequestBody);
+
+        alert('Thank you for submitting your information!');
+        setCandidate(candidateResponse.data.data);
+        setShowExperienceForm(candidateResponse.data.data.haveExperiences);
+      } else {
+        alert('Process failed! Please try again.');
+      }
+    } catch (error) {
+      console.error('Submission Error:', error);
+      alert('Process failed! Please try again.');
+    }
+  };
+
+  const handleExperienceChange = (index, name, value) => {
+    const updatedRows = [...candidateExperienceList];
+    updatedRows[index][name] = value;
+    setCandidateExperienceList(updatedRows);
+  };
+
+  const handleAddRow = () => {
+    setCandidateExperienceList([...candidateExperienceList, { experienceField: '', organization: '', years: '' }]);
+  };
+
+  const handleExperienceSubmit = async () => {
+    try {
+      // Filter out entries with all empty values
+      const filteredArray = candidateExperienceList.filter((item) => Object.values(item).some((value) => value !== ''));
+
+      console.log(filteredArray.length);
+      if (!filteredArray.length) {
+        alert('Please submit your experiences!');
+        return;
+      }
+
+      for (let i = 0; i < filteredArray.length; i++) {
+        const lineInfo = filteredArray[i];
+
+        const requestBody = {
+          experienceField: lineInfo.experienceField || '',
+          organization: lineInfo.organization || '',
+          years: lineInfo.years || '',
+          candidate: candidate
+        };
+
+        const response = await addCandidateExperienceInfoService(requestBody);
+
+        if (response?.data?.statusCode !== 200) {
+          // Handle individual failure
+          alert(`Submission failed for entry ${i + 1}. Please check your data.`);
+          return; // Stop further processing
+        }
+      }
+
+      alert('Thank you for submitting your information!');
+      setCandidateExperienceList([{ experienceField: '', organization: '', years: '' }]);
+      setShowExperienceForm(false);
+    } catch (err) {
+      console.error('Error:', err.message);
+      alert('Process failed! Please try again later.');
+    }
+  };
+
+  const responsiveStyles = {
+    form: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+      width: '100%',
+      maxWidth: '100%',
+      margin: '0 auto',
+      padding: '20px',
+      backgroundColor: '#fff',
+      boxSizing: 'border-box',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+    },
+    row: { display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%' },
+    field: {
+      flex: '1 1 calc(20% - 12px)',
+      minWidth: '200px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '8px',
+      boxSizing: 'border-box'
+    },
+    label: { fontWeight: 'bold', fontSize: '14px', textAlign: 'left' },
+    input: { padding: '10px', width: '100%', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' },
+    button: {
+      padding: '15px',
+      marginTop: '15px',
+      width: '100%',
+      backgroundColor: '#5b2c6f',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      textAlign: 'center'
+    }
+  };
+
   return (
-    <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
-      <Form
-        fields={fields}
-        initialValues={formData} // Pass the form data, including calculated fields
-        rowsConfig={[2, 3, 3, 2]}
-        onFormChange={handleFormChange} // Update calculations when inputs change
-        onSubmit={handleSubmit} // Handle final submission
-        resetAfterSubmit={true}
-      />
+    <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#eef2f6' }}>
+      <div hidden={showExperienceForm}>
+        <h2>
+          {' '}
+          <span style={{ color: 'crimson' }}>Welcome!</span> Please enter your information{' '}
+        </h2>
+        <Form
+          fields={fields}
+          initialValues={formData}
+          rowsConfig={[2, 3, 2, 2, 5, 3, 4, 5, 5, 5, 5, 5]}
+          onSubmit={handleSubmit}
+          resetAfterSubmit={true}
+        />
+      </div>
+
+      <div hidden={!showExperienceForm}>
+        <h2>Please enter your experiences information</h2>
+
+        <button style={responsiveStyles.input} onClick={handleAddRow}>
+          <FontAwesomeIcon icon={faPlus} /> Add more
+        </button>
+
+        <form style={responsiveStyles.form}>
+          <table className="table table-bordered table-striped table-highlight">
+            <thead>
+              <tr>
+                {experienceFields.map((field, fieldIndex) => (
+                  <th key={fieldIndex}>{field.label}</th>
+                ))}
+              </tr>
+            </thead>
+
+            <tbody>
+              {candidateExperienceList.map((experience, experienceIndex) => (
+                <tr key={experienceIndex}>
+                  {experienceFields.map((field, fieldIndex) => (
+                    <td key={fieldIndex}>
+                      <input
+                        type={field.type}
+                        name={field.name}
+                        placeholder={field.placeholder}
+                        onChange={(e) => handleExperienceChange(experienceIndex, field.name, e.target.value)}
+                        style={{
+                          ...responsiveStyles.input
+                        }}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </form>
+
+        <button style={responsiveStyles.button} onClick={handleExperienceSubmit}>
+          Submit
+        </button>
+      </div>
     </div>
   );
 }

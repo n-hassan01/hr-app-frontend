@@ -98,3 +98,23 @@ export const addCandidateFacilitiesInfoService = async (bodyInfo) => {
     return err.message;
   }
 };
+
+export const getCandidatesService = async () => {
+  try {
+    return await axios.get(`${usersUrl}api/candidates/all`);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const getCandidatesByDateService = async (interviewDate) => {
+  try {
+    return await axios.get(`${usersUrl}api/candidates/byDate?date=${encodeURIComponent(interviewDate)}`);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};

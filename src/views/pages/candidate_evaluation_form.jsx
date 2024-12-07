@@ -72,6 +72,7 @@ export default function EvaluationFormPage() {
     { label: 'Performance', name: 'performance', type: 'text', placeholder: 'Enter Performance', readOnly: true },
     { label: 'Average Marks', name: 'average_marks', type: 'number', placeholder: 'Average Marks', readOnly: true }
   ];
+
   return (
     <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
       <Form

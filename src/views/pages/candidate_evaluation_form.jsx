@@ -1,15 +1,12 @@
 /* eslint-disable no-unused-vars */
-import Alert from '@mui/material/Alert';
 import { useState } from 'react';
 import { getUserData } from '../../context/UserContext';
-import { addEvaluationForm, getCandidateList } from '../../services/ApiServices';
+import { addEvaluationForm } from '../../services/ApiServices';
 import Form from '../utilities/Form';
 
 export default function EvaluationFormPage() {
   const user = getUserData();
   const [formData, setFormData] = useState({});
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertSeverity, setAlertSeverity] = useState('success');
 
   // Calculate derived fields when form data changes
   const calculateDerivedFields = (data) => {
@@ -27,25 +24,6 @@ export default function EvaluationFormPage() {
     };
   };
 
-  const getCandidateData = async (data) => {
-    const { date_of_evaluation } = data;
-
-    // Log the date_of_evaluation and the calculated values
-    console.log('Date of Evaluation:', date_of_evaluation);
-
-    const response = await getCandidateList(date_of_evaluation);
-    console.log(response);
-
-    if (response.status === 200) {
-      alert('Data Saved Successfully');
-    } else {
-      alert('Process failed! Try again');
-    }
-    return {
-      response
-    };
-  };
-
   const handleFormChange = async (data) => {
     const updatedData = calculateDerivedFields(data); // Calculate derived fields
     setFormData(updatedData);
@@ -53,6 +31,7 @@ export default function EvaluationFormPage() {
   };
 
   const handleSubmit = async (data) => {
+    console.log('Submitted Data:', data);
     const requestBody = {
       key: { candidateNumber: 1, submittedBy: user?.id },
       submittedDate: new Date(),
@@ -62,17 +41,9 @@ export default function EvaluationFormPage() {
     try {
       const response = await addEvaluationForm(requestBody, user.token);
       if (response.status === 200) {
-        setAlertMessage('Data Saved Successfully');
-        setAlertSeverity('success');
-        setTimeout(() => {
-          setAlertMessage('');
-        }, 1000);
+        alert('Data Saved Successfully');
       } else {
-        setAlertMessage('Process failed! Try again');
-        setAlertSeverity('error');
-        setTimeout(() => {
-          setAlertMessage('');
-        }, 1000);
+        alert('Process failed! Try again');
       }
     } catch (error) {
       alert('An error occurred! Please try again.');
@@ -80,8 +51,6 @@ export default function EvaluationFormPage() {
   };
 
   const fields = [
-    { label: 'Date of Evaluation', name: 'date_of_evaluation', type: 'date', placeholder: 'Select Date' }, // New date field
-
     {
       label: 'Candidate Number',
       name: 'candidate_number',
@@ -105,16 +74,11 @@ export default function EvaluationFormPage() {
   ];
   return (
     <>
-      {alertMessage && (
-        <Alert variant="filled" severity={alertSeverity}>
-          {alertMessage}
-        </Alert>
-      )}
       <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
         <Form
           fields={fields}
           initialValues={formData} // Pass the form data, including calculated fields
-          rowsConfig={[3, 3, 3, 2]}
+          rowsConfig={[2, 3, 3, 2]}
           onFormChange={handleFormChange} // Update calculations when inputs change
           onSubmit={handleSubmit} // Handle final submission
           resetAfterSubmit={true}

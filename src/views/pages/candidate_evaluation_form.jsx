@@ -24,14 +24,14 @@ export default function EvaluationFormPage() {
     };
   };
 
-  const handleFormChange = async (data) => {
+  const handleFormChange = (data) => {
     const updatedData = calculateDerivedFields(data); // Calculate derived fields
     setFormData(updatedData);
-    //const candidateData = getCandidateData(data); // Update state with new data
   };
 
   const handleSubmit = async (data) => {
     console.log('Submitted Data:', data);
+
     const requestBody = {
       key: { candidateNumber: 1, submittedBy: user?.id },
       submittedDate: new Date(),
@@ -73,17 +73,15 @@ export default function EvaluationFormPage() {
     { label: 'Average Marks', name: 'average_marks', type: 'number', placeholder: 'Average Marks', readOnly: true }
   ];
   return (
-    <>
-      <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
-        <Form
-          fields={fields}
-          initialValues={formData} // Pass the form data, including calculated fields
-          rowsConfig={[2, 3, 3, 2]}
-          onFormChange={handleFormChange} // Update calculations when inputs change
-          onSubmit={handleSubmit} // Handle final submission
-          resetAfterSubmit={true}
-        />
-      </div>
-    </>
+    <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
+      <Form
+        fields={fields}
+        initialValues={formData} // Pass the form data, including calculated fields
+        rowsConfig={[2, 3, 3, 2]}
+        onFormChange={handleFormChange} // Update calculations when inputs change
+        onSubmit={handleSubmit} // Handle final submission
+        resetAfterSubmit={true}
+      />
+    </div>
   );
 }

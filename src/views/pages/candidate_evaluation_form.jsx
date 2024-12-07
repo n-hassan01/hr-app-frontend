@@ -26,7 +26,7 @@ export default function EvaluationFormPage() {
 
   const handleFormChange = (data) => {
     const updatedData = calculateDerivedFields(data); // Calculate derived fields
-    setFormData(updatedData);
+    setFormData(updatedData); // Update state with new data
   };
 
   const handleSubmit = async (data) => {

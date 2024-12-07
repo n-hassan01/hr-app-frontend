@@ -48,7 +48,7 @@ const Form = ({ fields, initialValues, onFormChange, onSubmit, resetAfterSubmit,
     },
     row: { display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%' },
     field: {
-      flex: '1 1 calc(33.333% - 15px)',
+      flex: '1 1 calc(20% - 12px)',
       minWidth: '200px',
       display: 'flex',
       flexDirection: 'column',
@@ -96,31 +96,54 @@ const Form = ({ fields, initialValues, onFormChange, onSubmit, resetAfterSubmit,
         <div key={rowIndex} style={responsiveStyles.row}>
           {rowFields.map((field, fieldIndex) => (
             <div key={fieldIndex} style={responsiveStyles.field}>
-              <label style={responsiveStyles.label}>{field.label}</label>
-              {field.type === 'select' ? (
-                <select
-                  name={field.name}
-                  value={formValues[field.name] || ''}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  style={responsiveStyles.input}
-                >
-                  {field.options.map((option, idx) => (
-                    <option key={idx} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type={field.type}
-                  name={field.name}
-                  value={formValues[field.name] || ''}
-                  placeholder={field.placeholder}
-                  readOnly={field.readOnly || false}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  style={responsiveStyles.input}
-                />
-              )}
+              <label
+                style={{
+                  ...responsiveStyles.label,
+                  display: field.show ? 'none' : 'block'
+                }}
+              >
+                {field.label}
+                {field.type === 'checkbox' && (
+                  <input
+                    type="checkbox"
+                    name={field.name}
+                    checked={formValues[field.name] || false}
+                    onChange={(e) => handleChange(field.name, e.target.checked)}
+                    style={responsiveStyles.checkbox}
+                  />
+                )}
+              </label>
+              {field.type !== 'checkbox' &&
+                (field.type === 'select' ? (
+                  <select
+                    name={field.name}
+                    value={formValues[field.name] || ''}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    style={{
+                      ...responsiveStyles.input,
+                      display: field.show ? 'none' : 'block'
+                    }}
+                  >
+                    {field.options.map((option, idx) => (
+                      <option key={idx} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type={field.type}
+                    name={field.name}
+                    value={formValues[field.name] || ''}
+                    placeholder={field.placeholder}
+                    readOnly={field.readOnly || false}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    style={{
+                      ...responsiveStyles.input,
+                      display: field.show ? 'none' : 'block'
+                    }}
+                  />
+                ))}
             </div>
           ))}
         </div>

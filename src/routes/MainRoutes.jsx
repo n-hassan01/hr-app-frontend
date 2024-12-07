@@ -11,7 +11,7 @@ const DataTable = Loadable(lazy(() => import('views/utilities/DataTable')));
 const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
 const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
-const CandidateEvalution = Loadable(lazy(() => import('views/pages/candidateEvaluationForm')));
+const CandidateEvalution = Loadable(lazy(() => import('views/pages/candidate_evaluation_form')));
 const FormTabsPage = Loadable(lazy(() => import('views/pages/hr/FacilitiesTabPage')));
 
 // ==============================|| MAIN ROUTING ||============================== //

@@ -4,7 +4,7 @@ import { getUserData } from '../../../context/UserContext';
 import { addEvaluationForm, getCandidateList } from '../../../services/ApiServices';
 import Form from '../../utilities/Form';
 
-export default function CurrentStatusForm() {
+export default function ExpectedStatusForm() {
   const user = getUserData();
   const [formData, setFormData] = useState({});
 
@@ -74,33 +74,26 @@ export default function CurrentStatusForm() {
   };
 
   const fields = [
-    { label: 'Company', name: 'company', type: 'text', placeholder: 'Enter Company Name', readOnly: true },
-    { label: 'SBU', name: 'sbu', type: 'text', placeholder: 'Enter SBU', readOnly: true },
-    { label: 'Department', name: 'department', type: 'text', placeholder: 'Enter Department Name', readOnly: true },
-    { label: 'ReportsTo', name: 'reportsTo', type: 'text', placeholder: 'Enter ReportsTo Name', readOnly: true },
-    { label: 'Designation', name: 'designation', type: 'text', placeholder: 'Enter Designation Name', readOnly: true },
-    { label: 'Salary', name: 'salary', type: 'number', placeholder: 'Enter Salary ', readOnly: true },
-    { label: 'Bonus', name: 'bonus', type: 'text', placeholder: 'Enter Bonus ', readOnly: true },
-    { label: 'TA Or Conveyance', name: 'taOrConveyance', type: 'text', placeholder: 'Enter Ta Or Conveyance', readOnly: true },
-    { label: 'DA Or Food', name: 'daOrFood', type: 'text', placeholder: 'Enter DA Or Food', readOnly: true },
+    { label: 'Company', name: 'company', type: 'text', placeholder: 'Enter Company Name' },
+    { label: 'SBU', name: 'sbu', type: 'text', placeholder: 'Enter SBU' },
+    { label: 'Department', name: 'department', type: 'text', placeholder: 'Enter Department Name' },
+    { label: 'Reports to', name: 'reportsTo', type: 'text', placeholder: 'Enter ReportsTo Name' },
+    { label: 'Designation', name: 'designation', type: 'text', placeholder: 'Enter Designation Name' },
+    { label: 'Salary', name: 'salary', type: 'number', placeholder: 'Enter Salary ' },
+    { label: 'Bonus', name: 'bonus', type: 'text', placeholder: 'Enter Bonus ' },
+    { label: 'TA/Conveyance', name: 'taOrConveyance', type: 'text', placeholder: 'Enter Ta/Conveyance' },
+    { label: 'DA/Food', name: 'daOrFood', type: 'text', placeholder: 'Enter DA/Food' },
     {
-      label: 'Benefit Or Allowance',
+      label: 'Benefit/Allowance',
       name: 'benefitOrAllowance',
       type: 'text',
-      placeholder: 'Enter Benefit Or Allowance',
-      readOnly: true
+      placeholder: 'Enter Benefit/Allowance'
     },
-    { label: 'PF Or Gratuity', name: 'pfOrGratuity', type: 'text', placeholder: 'Enter PF Or Gratuity', readOnly: true },
-    {
-      label: 'Transport Facility',
-      name: 'transportFacility',
-      type: 'text',
-      placeholder: 'Enter Transport Facility',
-      readOnly: true
-    },
-    { label: 'Incentive Or Kpi', name: 'incentiveOrKpi', type: 'text', placeholder: 'Enter Incentive Or Kpi', readOnly: true },
-    { label: 'Mobile Ceiling', name: 'mobileCeiling', type: 'text', placeholder: 'Enter Mobile Ceiling', readOnly: true },
-    { label: 'Total Ctc', name: 'totalCtc', type: 'text', placeholder: 'Enter Total Ctc', readOnly: true }
+    { label: 'PF/Gratuity', name: 'pfOrGratuity', type: 'text', placeholder: 'Enter PF/Gratuity' },
+    { label: 'Transport Facility', name: 'transportFacility', type: 'text', placeholder: 'Enter Transport Facility' },
+    { label: 'Incentive/Kpi', name: 'incentiveOrKpi', type: 'text', placeholder: 'Enter Incentive/Kpi' },
+    { label: 'Mobile Ceiling', name: 'mobileCeiling', type: 'text', placeholder: 'Enter Mobile Ceiling' },
+    { label: 'Total Ctc', name: 'totalCtc', type: 'text', placeholder: 'Enter Total Ctc' }
   ];
 
   return (

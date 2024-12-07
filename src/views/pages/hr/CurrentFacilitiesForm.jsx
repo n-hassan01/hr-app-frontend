@@ -1,10 +1,13 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { getUserData } from '../../../context/UserContext';
 import { addEvaluationForm, getCandidateList } from '../../../services/ApiServices';
 import Form from '../../utilities/Form';
 
-export default function ExpectedStatusForm() {
+export default function CurrentStatusForm({ groupId }) {
+  console.log(groupId);
+
   const user = getUserData();
   const [formData, setFormData] = useState({});
 
@@ -74,26 +77,33 @@ export default function ExpectedStatusForm() {
   };
 
   const fields = [
-    { label: 'Company', name: 'company', type: 'text', placeholder: 'Enter Company Name' },
-    { label: 'SBU', name: 'sbu', type: 'text', placeholder: 'Enter SBU' },
-    { label: 'Department', name: 'department', type: 'text', placeholder: 'Enter Department Name' },
-    { label: 'ReportsTo', name: 'reportsTo', type: 'text', placeholder: 'Enter ReportsTo Name' },
-    { label: 'Designation', name: 'designation', type: 'text', placeholder: 'Enter Designation Name' },
-    { label: 'Salary', name: 'salary', type: 'number', placeholder: 'Enter Salary ' },
-    { label: 'Bonus', name: 'bonus', type: 'text', placeholder: 'Enter Bonus ' },
-    { label: 'TA Or Conveyance', name: 'taOrConveyance', type: 'text', placeholder: 'Enter Ta Or Conveyance' },
-    { label: 'DA Or Food', name: 'daOrFood', type: 'text', placeholder: 'Enter DA Or Food' },
+    { label: 'Company', name: 'company', type: 'text', placeholder: 'Company Name', readOnly: true },
+    { label: 'SBU', name: 'sbu', type: 'text', placeholder: 'SBU', readOnly: true },
+    { label: 'Department', name: 'department', type: 'text', placeholder: 'Department Name', readOnly: true },
+    { label: 'Reports to', name: 'reportsTo', type: 'text', placeholder: 'ReportsTo Name', readOnly: true },
+    { label: 'Designation', name: 'designation', type: 'text', placeholder: 'Designation Name', readOnly: true },
+    { label: 'Salary', name: 'salary', type: 'number', placeholder: 'Salary ', readOnly: true },
+    { label: 'Bonus', name: 'bonus', type: 'text', placeholder: 'Bonus ', readOnly: true },
+    { label: 'TA/Conveyance', name: 'taOrConveyance', type: 'text', placeholder: 'Ta/Conveyance', readOnly: true },
+    { label: 'DA/Food', name: 'daOrFood', type: 'text', placeholder: 'DA/Food', readOnly: true },
     {
-      label: 'Benefit Or Allowance',
+      label: 'Benefit/Allowance',
       name: 'benefitOrAllowance',
       type: 'text',
-      placeholder: 'Enter Benefit Or Allowance'
-    }
-    // { label: 'PF Or Gratuity', name: 'pfOrGratuity', type: 'text', placeholder: 'Enter PF Or Gratuity' },
-    // { label: 'Transport Facility', name: 'transportFacility', type: 'text', placeholder: 'Enter Transport Facility' },
-    // { label: 'Incentive Or Kpi', name: 'incentiveOrKpi', type: 'text', placeholder: 'Enter Incentive Or Kpi' },
-    // { label: 'Mobile Ceiling', name: 'mobileCeiling', type: 'text', placeholder: 'Enter Mobile Ceiling' },
-    // { label: 'Total Ctc', name: 'totalCtc', type: 'text', placeholder: 'Enter Total Ctc' }
+      placeholder: 'Benefit/Allowance',
+      readOnly: true
+    },
+    { label: 'PF/Gratuity', name: 'pfOrGratuity', type: 'text', placeholder: 'PF/Gratuity', readOnly: true },
+    {
+      label: 'Transport Facility',
+      name: 'transportFacility',
+      type: 'text',
+      placeholder: 'Transport Facility',
+      readOnly: true
+    },
+    { label: 'Incentive/Kpi', name: 'incentiveOrKpi', type: 'text', placeholder: 'Incentive/Kpi', readOnly: true },
+    { label: 'Mobile Ceiling', name: 'mobileCeiling', type: 'text', placeholder: 'Mobile Ceiling', readOnly: true },
+    { label: 'Total Ctc', name: 'totalCtc', type: 'text', placeholder: 'Total Ctc', readOnly: true }
   ];
 
   return (

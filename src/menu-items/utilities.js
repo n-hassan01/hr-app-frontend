@@ -27,7 +27,7 @@ const utilities = {
         },
         {
             id: 'util-typography',
-            title: 'Evaluation Form',
+            title: 'Candidate Evaluation',
             type: 'item',
             url: 'candidate-evaluation',
             icon: icons.IconTypography,
@@ -35,7 +35,7 @@ const utilities = {
         },
         {
             id: 'util-color',
-            title: 'HR Entry Form',
+            title: 'Candidate Facilities',
             type: 'item',
             url: 'hr-entry-form',
             icon: icons.IconTypography,

@@ -2,7 +2,7 @@
 import { Box, Tab, Tabs } from '@mui/material';
 import { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import ApprovedStatusFormPage from './ApprovedFaciliiesForm';
+import ApprovedStatusFormPage from './ApprovedFacilitiesForm';
 import CurrentStatusForm from './CurrentFacilitiesForm';
 import ExpectedStatusForm from './ExpectedFacilitiesForm';
 import ExtraFacilitiesForm from './OtherFacilitiesForm';

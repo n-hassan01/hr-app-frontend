@@ -54,6 +54,7 @@ export default function EvaluationFormPage() {
   };
 
   const handleSubmit = async (data) => {
+<<<<<<< HEAD:src/views/pages/candidate_evaluation_form.jsx
     const requestBody = {
       key: { candidateNumber: 1, submittedBy: user?.id },
       submittedDate: new Date(),
@@ -80,10 +81,43 @@ export default function EvaluationFormPage() {
     } catch (error) {
       alert('An error occurred! Please try again.');
       setShouldResetForm(false);
+=======
+    console.log('Submitted Data:', data);
+
+    if (selectedCandidate) {
+      try {
+        const requestBody = {
+          attireBodyLanguage: data.attireBodyLanguage,
+          workKnowledge: data.workKnowledge,
+          teamPlayer: data.teamPlayer,
+          problemSolvingSkill: data.problemSolvingSkill,
+          communicationSkill: data.communicationSkill,
+          outOfMarks: data.outOfMarks,
+          totalMarks: data.totalMarks,
+          avgMarks: data.avgMarks,
+          performance: data.performance,
+          candidate: {
+            candidateNumber: selectedCandidate
+          }
+        };
+
+        const response = await addEvaluationForm(requestBody, user.token);
+        if (response.data.statusCode === 200) {
+          alert('Data Saved Successfully');
+        } else {
+          alert('Process failed! Try again');
+        }
+      } catch (error) {
+        alert('An error occurred! Please try again.');
+      }
+    } else {
+      alert('Please select a candidaete');
+>>>>>>> origin/HEAD:src/views/pages/CandidateEvaluationForm.jsx
     }
   };
 
   const fields = [
+<<<<<<< HEAD:src/views/pages/candidate_evaluation_form.jsx
     { label: 'Date of Evaluation', name: 'date_of_evaluation', type: 'date', placeholder: 'Select Date' }, // New date field
 
     {
@@ -106,6 +140,18 @@ export default function EvaluationFormPage() {
     { label: 'Total Marks', name: 'total_marks', type: 'number', placeholder: 'Total Marks', readOnly: true },
     { label: 'Performance', name: 'performance', type: 'text', placeholder: 'Enter Performance', readOnly: true },
     { label: 'Average Marks', name: 'average_marks', type: 'number', placeholder: 'Average Marks', readOnly: true }
+=======
+    { label: 'Out of Marks', name: 'outOfMarks', type: 'number', placeholder: 'Out of Marks', defaultValue: 10 },
+    { label: 'Average Marks', name: 'avgMarks', type: 'number', placeholder: 'Average Marks', readOnly: true },
+    { label: 'Performance', name: 'performance', type: 'text', placeholder: 'Enter Performance', readOnly: true },
+
+    { label: 'Attire Body Language', name: 'attireBodyLanguage', type: 'number', placeholder: 'Attire Body Language' },
+    { label: 'Work Knowledge', name: 'workKnowledge', type: 'number', placeholder: 'Enter Work Knowledge' },
+    { label: 'Team Player', name: 'teamPlayer', type: 'number', placeholder: 'Team Player' },
+    { label: 'Problem Solving Skill', name: 'problemSolvingSkill', type: 'number', placeholder: 'Problem Solving Skill' },
+    { label: 'Communication Skill', name: 'communicationSkill', type: 'number', placeholder: 'Communication Skill' },
+    { label: 'Total Marks', name: 'totalMarks', type: 'number', placeholder: 'Total Marks', readOnly: true }
+>>>>>>> origin/HEAD:src/views/pages/CandidateEvaluationForm.jsx
   ];
   return (
     <>

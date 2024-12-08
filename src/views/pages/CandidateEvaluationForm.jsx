@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-unused-vars */
+import Alert from '@mui/material/Alert';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { getUserData } from '../../context/UserContext';
@@ -11,10 +12,13 @@ import { addEvaluationForm, getCandidatesByDateService, getCandidatesService } f
 export default function EvaluationFormPage() {
   const user = getUserData();
   const [formData, setFormData] = useState({});
-
   const [selectedDate, setSelectedDate] = useState('');
   const [candidateList, setCandidateList] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState('success');
+  const [shouldResetForm, setShouldResetForm] = useState(true);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -40,10 +44,7 @@ export default function EvaluationFormPage() {
 
   // Calculate derived fields when form data changes
   const calculateDerivedFields = (data) => {
-    console.log(data);
-
     const fieldsToSum = ['attireBodyLanguage', 'workKnowledge', 'teamPlayer', 'problemSolvingSkill', 'communicationSkill'];
-
     const totalMarks = fieldsToSum.reduce((total, field) => total + (parseFloat(data[field]) || 0), 0);
     const performance =
       totalMarks >= 45 ? 'Outstanding' : totalMarks >= 31 ? 'Good' : totalMarks >= 23 ? 'Average' : totalMarks >= 17 ? 'Fair' : 'Poor';
@@ -58,14 +59,10 @@ export default function EvaluationFormPage() {
 
   const handleFormChange = (data) => {
     const updatedData = calculateDerivedFields(data); // Calculate derived fields
-    console.log(updatedData);
-
     setFormData(updatedData); // Update state with new data
   };
 
   const handleSubmit = async (data) => {
-    console.log('Submitted Data:', data);
-
     if (selectedCandidate) {
       try {
         const requestBody = {
@@ -85,12 +82,27 @@ export default function EvaluationFormPage() {
 
         const response = await addEvaluationForm(requestBody, user.token);
         if (response.data.statusCode === 200) {
-          alert('Data Saved Successfully');
+          setAlertMessage('Data Saved Successfully');
+          setAlertSeverity('success');
+          setShouldResetForm(true);
+          setTimeout(() => {
+            setAlertMessage('');
+          }, 1000);
         } else {
-          alert('Process failed! Try again');
+          setAlertMessage('Process failed! Try again');
+          setAlertSeverity('error');
+          setShouldResetForm(false);
+          setTimeout(() => {
+            setAlertMessage('');
+          }, 1000);
         }
       } catch (error) {
-        alert('An error occurred! Please try again.');
+        setAlertMessage('An Error Occured! Please Try Again..');
+        setAlertSeverity('error');
+        setShouldResetForm(false);
+        setTimeout(() => {
+          setAlertMessage('');
+        }, 1000);
       }
     } else {
       alert('Please select a candidaete');
@@ -129,6 +141,11 @@ export default function EvaluationFormPage() {
 
   return (
     <div>
+      {alertMessage && (
+        <Alert variant="filled" severity={alertSeverity}>
+          {alertMessage}
+        </Alert>
+      )}
       <div
         style={{
           display: 'flex',
@@ -186,7 +203,7 @@ export default function EvaluationFormPage() {
         rowsConfig={[3, 3, 3]}
         onFormChange={handleFormChange} // Update calculations when inputs change
         onSubmit={handleSubmit} // Handle final submission
-        resetAfterSubmit={true}
+        resetAfterSubmit={shouldResetForm}
       />
     </div>
   );

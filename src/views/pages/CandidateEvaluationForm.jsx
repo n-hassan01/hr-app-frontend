@@ -61,35 +61,48 @@ export default function EvaluationFormPage() {
   const handleSubmit = async (data) => {
     console.log('Submitted Data:', data);
 
-    const requestBody = {
-      key: { candidateNumber: 1, submittedBy: user?.id },
-      submittedDate: new Date(),
-      ...data
-    };
+    if (selectedCandidate) {
+      try {
+        const requestBody = {
+          attireBodyLanguage: data.attireBodyLanguage,
+          workKnowledge: data.workKnowledge,
+          teamPlayer: data.teamPlayer,
+          problemSolvingSkill: data.problemSolvingSkill,
+          communicationSkill: data.communicationSkill,
+          outOfMarks: data.outOfMarks,
+          totalMarks: data.totalMarks,
+          avgMarks: data.avgMarks,
+          performance: data.performance,
+          candidate: {
+            candidateNumber: selectedCandidate
+          }
+        };
 
-    try {
-      const response = await addEvaluationForm(requestBody, user.token);
-      if (response.status === 200) {
-        alert('Data Saved Successfully');
-      } else {
-        alert('Process failed! Try again');
+        const response = await addEvaluationForm(requestBody, user.token);
+        if (response.data.statusCode === 200) {
+          alert('Data Saved Successfully');
+        } else {
+          alert('Process failed! Try again');
+        }
+      } catch (error) {
+        alert('An error occurred! Please try again.');
       }
-    } catch (error) {
-      alert('An error occurred! Please try again.');
+    } else {
+      alert('Please select a candidaete');
     }
   };
 
   const fields = [
-    { label: 'Out of Marks', name: 'out_of_marks', type: 'number', placeholder: 'Out of Marks', defaultValue: 10 },
-    { label: 'Average Marks', name: 'average_marks', type: 'number', placeholder: 'Average Marks', readOnly: true },
+    { label: 'Out of Marks', name: 'outOfMarks', type: 'number', placeholder: 'Out of Marks', defaultValue: 10 },
+    { label: 'Average Marks', name: 'avgMarks', type: 'number', placeholder: 'Average Marks', readOnly: true },
     { label: 'Performance', name: 'performance', type: 'text', placeholder: 'Enter Performance', readOnly: true },
 
-    { label: 'Attire Body Language', name: 'attire_body_language', type: 'number', placeholder: 'Attire Body Language' },
-    { label: 'Work Knowledge', name: 'work_knowledge', type: 'number', placeholder: 'Enter Work Knowledge' },
-    { label: 'Team Player', name: 'team_player', type: 'number', placeholder: 'Team Player' },
-    { label: 'Problem Solving Skill', name: 'problem_solving_skill', type: 'number', placeholder: 'Problem Solving Skill' },
-    { label: 'Communication Skill', name: 'communication_skill', type: 'number', placeholder: 'Communication Skill' },
-    { label: 'Total Marks', name: 'total_marks', type: 'number', placeholder: 'Total Marks', readOnly: true }
+    { label: 'Attire Body Language', name: 'attireBodyLanguage', type: 'number', placeholder: 'Attire Body Language' },
+    { label: 'Work Knowledge', name: 'workKnowledge', type: 'number', placeholder: 'Enter Work Knowledge' },
+    { label: 'Team Player', name: 'teamPlayer', type: 'number', placeholder: 'Team Player' },
+    { label: 'Problem Solving Skill', name: 'problemSolvingSkill', type: 'number', placeholder: 'Problem Solving Skill' },
+    { label: 'Communication Skill', name: 'communicationSkill', type: 'number', placeholder: 'Communication Skill' },
+    { label: 'Total Marks', name: 'totalMarks', type: 'number', placeholder: 'Total Marks', readOnly: true }
   ];
 
   const handleDateChange = (data) => {

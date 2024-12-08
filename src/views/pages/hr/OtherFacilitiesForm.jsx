@@ -89,7 +89,7 @@ export default function OtherFacilitiesForm() {
   ];
 
   return (
-    <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
+    <div>
       <Form
         fields={fields}
         initialValues={formData} // Pass the form data, including calculated fields

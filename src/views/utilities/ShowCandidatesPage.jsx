@@ -4,7 +4,7 @@ import Portal from '@mui/material/Portal';
 import { DataGrid, GridToolbar, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { getCandidatesService } from './../../services/ApiServices';
+import { getCandidatesService } from '../../services/ApiServices';
 
 function MyCustomToolbar(props) {
   return (

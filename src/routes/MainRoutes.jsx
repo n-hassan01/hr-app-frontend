@@ -6,8 +6,9 @@ import ProtectedRoute from '../routes/ProtectedRoutes'; // Import the ProtectedR
 
 // Lazy-loaded main content
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
-const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
+const UtilsTypography = Loadable(lazy(() => import('views/utilities/ShowCandidatesPage')));
 const DataTable = Loadable(lazy(() => import('views/utilities/DataTable')));
+// const DataExportTable = Loadable(lazy(() => import('views/utilities/DataExportTable')));
 const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
 const UtilsShadow = Loadable(lazy(() => import('views/utilities/Shadow')));
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
@@ -57,6 +58,10 @@ const MainRoutes = {
           path: 'data-table',
           element: <DataTable />
         },
+        // {
+        //   path: 'dataExportTable',
+        //   element: <DataExportTable />
+        // },
         {
           path: 'util-shadow',
           element: <UtilsShadow />

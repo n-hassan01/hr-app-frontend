@@ -28,7 +28,7 @@ export default function EvaluationFormPage() {
     { label: 'Interview Date', name: 'interviewDate', type: 'date' },
 
     { label: 'Full name', name: 'fullName', type: 'text' },
-    { label: 'NID number', name: 'nidNumber', type: 'text' },
+    { label: 'NID/BIRTH REGISTRATION', name: 'nidNumber', type: 'text' },
     { label: 'Age', name: 'age', type: 'text' },
 
     { label: 'Email address', name: 'email', type: 'text', placeholder: 'example@gmail.com' },

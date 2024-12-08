@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { getUserData } from '../../../context/UserContext';
-import { addEvaluationForm, getCandidateList } from '../../../services/ApiServices';
+import { addEvaluationForm } from '../../../services/ApiServices';
 import Form from '../../utilities/Form';
 
 export default function ExpectedStatusForm() {
@@ -24,24 +24,24 @@ export default function ExpectedStatusForm() {
     };
   };
 
-  const getCandidateData = async (data) => {
-    const { date_of_evaluation } = data;
+  // const getCandidateData = async (data) => {
+  //   const { date_of_evaluation } = data;
 
-    // Log the date_of_evaluation and the calculated values
-    console.log('Date of Evaluation:', date_of_evaluation);
+  //   // Log the date_of_evaluation and the calculated values
+  //   console.log('Date of Evaluation:', date_of_evaluation);
 
-    const response = await getCandidateList(date_of_evaluation);
-    console.log(response);
+  //   const response = await getCandidateList(date_of_evaluation);
+  //   console.log(response);
 
-    if (response.status === 200) {
-      alert('Data Saved Successfully');
-    } else {
-      alert('Process failed! Try again');
-    }
-    return {
-      response
-    };
-  };
+  //   if (response.status === 200) {
+  //     alert('Data Saved Successfully');
+  //   } else {
+  //     alert('Process failed! Try again');
+  //   }
+  //   return {
+  //     response
+  //   };
+  // };
 
   const handleFormChange = async (data) => {
     console.log(data);
@@ -97,7 +97,7 @@ export default function ExpectedStatusForm() {
   ];
 
   return (
-    <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
+    <div>
       <Form
         fields={fields}
         initialValues={formData} // Pass the form data, including calculated fields

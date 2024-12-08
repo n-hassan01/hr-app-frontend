@@ -1,20 +1,48 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-unused-vars */
-import Alert from '@mui/material/Alert';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Select from 'react-select';
 import { getUserData } from '../../context/UserContext';
-import { addEvaluationForm, getCandidateList } from '../../services/ApiServices';
 import Form from '../utilities/Form';
+
+// api services
+import { addEvaluationForm, getCandidatesByDateService, getCandidatesService } from '../../services/ApiServices';
 
 export default function EvaluationFormPage() {
   const user = getUserData();
   const [formData, setFormData] = useState({});
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertSeverity, setAlertSeverity] = useState('success');
-  const [shouldResetForm, setShouldResetForm] = useState(true);
+
+  const [selectedDate, setSelectedDate] = useState('');
+  const [candidateList, setCandidateList] = useState([]);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        if (selectedDate) {
+          const reponse = await getCandidatesByDateService(selectedDate);
+          if (reponse.data.statusCode === 200) {
+            setCandidateList(reponse.data.data);
+          }
+        } else {
+          const reponse = await getCandidatesService(selectedDate);
+          if (reponse.data.statusCode === 200) {
+            setCandidateList(reponse.data.data);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData();
+  }, [selectedDate]);
+  console.log(candidateList);
 
   // Calculate derived fields when form data changes
   const calculateDerivedFields = (data) => {
-    const fieldsToSum = ['attire_body_language', 'work_knowledge', 'team_player', 'problem_solving_skill', 'communication_skill'];
+    console.log(data);
+
+    const fieldsToSum = ['attireBodyLanguage', 'workKnowledge', 'teamPlayer', 'problemSolvingSkill', 'communicationSkill'];
 
     const totalMarks = fieldsToSum.reduce((total, field) => total + (parseFloat(data[field]) || 0), 0);
     const performance =
@@ -22,66 +50,20 @@ export default function EvaluationFormPage() {
 
     return {
       ...data,
-      total_marks: totalMarks,
-      average_marks: totalMarks / fieldsToSum.length,
+      totalMarks: totalMarks,
+      avgMarks: totalMarks / fieldsToSum.length,
       performance
     };
   };
 
-  const getCandidateData = async (data) => {
-    const { date_of_evaluation } = data;
-
-    // Log the date_of_evaluation and the calculated values
-    console.log('Date of Evaluation:', date_of_evaluation);
-
-    const response = await getCandidateList(date_of_evaluation);
-    console.log(response);
-
-    if (response.status === 200) {
-      alert('Data Saved Successfully');
-    } else {
-      alert('Process failed! Try again');
-    }
-    return {
-      response
-    };
-  };
-
-  const handleFormChange = async (data) => {
+  const handleFormChange = (data) => {
     const updatedData = calculateDerivedFields(data); // Calculate derived fields
-    setFormData(updatedData);
-    //const candidateData = getCandidateData(data); // Update state with new data
+    console.log(updatedData);
+
+    setFormData(updatedData); // Update state with new data
   };
 
   const handleSubmit = async (data) => {
-<<<<<<< HEAD:src/views/pages/candidate_evaluation_form.jsx
-    const requestBody = {
-      key: { candidateNumber: 1, submittedBy: user?.id },
-      submittedDate: new Date(),
-      ...data
-    };
-
-    try {
-      const response = await addEvaluationForm(requestBody, user.token);
-      if (response.status === 200) {
-        setAlertMessage('Data Saved Successfully');
-        setAlertSeverity('success');
-        setShouldResetForm(true);
-        setTimeout(() => {
-          setAlertMessage('');
-        }, 1000);
-      } else {
-        setAlertMessage('Process failed! Try again');
-        setAlertSeverity('error');
-        setShouldResetForm(false);
-        setTimeout(() => {
-          setAlertMessage('');
-        }, 1000);
-      }
-    } catch (error) {
-      alert('An error occurred! Please try again.');
-      setShouldResetForm(false);
-=======
     console.log('Submitted Data:', data);
 
     if (selectedCandidate) {
@@ -112,35 +94,10 @@ export default function EvaluationFormPage() {
       }
     } else {
       alert('Please select a candidaete');
->>>>>>> origin/HEAD:src/views/pages/CandidateEvaluationForm.jsx
     }
   };
 
   const fields = [
-<<<<<<< HEAD:src/views/pages/candidate_evaluation_form.jsx
-    { label: 'Date of Evaluation', name: 'date_of_evaluation', type: 'date', placeholder: 'Select Date' }, // New date field
-
-    {
-      label: 'Candidate Number',
-      name: 'candidate_number',
-      type: 'select',
-      options: [
-        { value: '', label: 'Select Any Option' },
-        { value: 'candidate1', label: 'Candidate 1' },
-        { value: 'candidate2', label: 'Candidate 2' },
-        { value: 'candidate3', label: 'Candidate 3' }
-      ]
-    },
-    { label: 'Out of Marks', name: 'out_of_marks', type: 'number', placeholder: 'Out of Marks', defaultValue: 10 },
-    { label: 'Attire Body Language', name: 'attire_body_language', type: 'number', placeholder: 'Attire Body Language' },
-    { label: 'Work Knowledge', name: 'work_knowledge', type: 'number', placeholder: 'Enter Work Knowledge' },
-    { label: 'Team Player', name: 'team_player', type: 'number', placeholder: 'Team Player' },
-    { label: 'Problem Solving Skill', name: 'problem_solving_skill', type: 'number', placeholder: 'Problem Solving Skill' },
-    { label: 'Communication Skill', name: 'communication_skill', type: 'number', placeholder: 'Communication Skill' },
-    { label: 'Total Marks', name: 'total_marks', type: 'number', placeholder: 'Total Marks', readOnly: true },
-    { label: 'Performance', name: 'performance', type: 'text', placeholder: 'Enter Performance', readOnly: true },
-    { label: 'Average Marks', name: 'average_marks', type: 'number', placeholder: 'Average Marks', readOnly: true }
-=======
     { label: 'Out of Marks', name: 'outOfMarks', type: 'number', placeholder: 'Out of Marks', defaultValue: 10 },
     { label: 'Average Marks', name: 'avgMarks', type: 'number', placeholder: 'Average Marks', readOnly: true },
     { label: 'Performance', name: 'performance', type: 'text', placeholder: 'Enter Performance', readOnly: true },
@@ -151,25 +108,86 @@ export default function EvaluationFormPage() {
     { label: 'Problem Solving Skill', name: 'problemSolvingSkill', type: 'number', placeholder: 'Problem Solving Skill' },
     { label: 'Communication Skill', name: 'communicationSkill', type: 'number', placeholder: 'Communication Skill' },
     { label: 'Total Marks', name: 'totalMarks', type: 'number', placeholder: 'Total Marks', readOnly: true }
->>>>>>> origin/HEAD:src/views/pages/CandidateEvaluationForm.jsx
   ];
+
+  const handleDateChange = (data) => {
+    setSelectedDate(data);
+  };
+
+  const [inputValue, setInputValue] = useState('');
+  const handleInputChange = (inputValue) => {
+    setInputValue(inputValue);
+  };
+
+  const candidateOptions = candidateList
+    .filter((option) => option.fullName.toLowerCase().includes(inputValue.toLowerCase()))
+    .map((option) => ({ value: option.candidateNumber, label: option.fullName + ' ' + option.contactNumber }));
+
+  const handleCandidateSelection = (selectedOption) => {
+    setSelectedCandidate(selectedOption.value);
+  };
+
   return (
-    <>
-      {alertMessage && (
-        <Alert variant="filled" severity={alertSeverity}>
-          {alertMessage}
-        </Alert>
-      )}
-      <div style={{ padding: '0', width: '80vw', height: '100vh', margin: '0' }}>
-        <Form
-          fields={fields}
-          initialValues={formData} // Pass the form data, including calculated fields
-          rowsConfig={[3, 3, 3, 2]}
-          onFormChange={handleFormChange} // Update calculations when inputs change
-          onSubmit={handleSubmit} // Handle final submission
-          resetAfterSubmit={shouldResetForm}
-        />
+    <div>
+      <div
+        style={{
+          display: 'flex',
+          gap: '15px',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          width: '100%',
+          marginBottom: '1rem'
+        }}
+      >
+        <div
+          style={{
+            flex: '1 1 calc(20% - 12px)',
+            minWidth: '200px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            boxSizing: 'border-box'
+          }}
+        >
+          <label style={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'left' }}>Select interview date</label>
+          <input
+            type="date"
+            name="interviewDate"
+            onChange={(e) => handleDateChange(e.target.value)}
+            style={{ padding: '10px', width: '100%', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }}
+          />
+        </div>
+
+        <div
+          style={{
+            flex: '1 1 calc(20% - 12px)',
+            minWidth: '200px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            boxSizing: 'border-box'
+          }}
+        >
+          <label style={{ fontWeight: 'bold', fontSize: '14px', textAlign: 'left' }}>Select candidate</label>
+          <Select
+            name="candidate"
+            onChange={handleCandidateSelection}
+            onInputChange={handleInputChange}
+            options={candidateOptions}
+            placeholder="Type to select a candidate..."
+            isClearable
+            style={{ padding: '10px', width: '100%', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }}
+          />
+        </div>
       </div>
-    </>
+      <Form
+        fields={fields}
+        initialValues={formData} // Pass the form data, including calculated fields
+        rowsConfig={[3, 3, 3]}
+        onFormChange={handleFormChange} // Update calculations when inputs change
+        onSubmit={handleSubmit} // Handle final submission
+        resetAfterSubmit={true}
+      />
+    </div>
   );
 }

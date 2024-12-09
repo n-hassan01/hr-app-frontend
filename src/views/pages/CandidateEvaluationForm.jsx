@@ -59,10 +59,7 @@ export default function EvaluationFormPage() {
   };
 
   const handleSubmit = async (data) => {
-    if (!data.candidateNumber) {
-      alert('Please select a candidate!');
-      return;
-    }
+    console.log('Submitted Data:', data);
 
     if (selectedCandidate) {
       try {
@@ -172,21 +169,14 @@ export default function EvaluationFormPage() {
           />
         </div>
       </div>
-
-      <div
-        style={{
-          display: selectedCandidate ? 'block' : 'none'
-        }}
-      >
-        <Form
-          fields={fields}
-          initialValues={formData} // Pass the form data, including calculated fields
-          rowsConfig={[3, 3, 3]}
-          onFormChange={handleFormChange} // Update calculations when inputs change
-          onSubmit={handleSubmit} // Handle final submission
-          resetAfterSubmit={true}
-        />
-      </div>
+      <Form
+        fields={fields}
+        initialValues={formData} // Pass the form data, including calculated fields
+        rowsConfig={[3, 3, 3]}
+        onFormChange={handleFormChange} // Update calculations when inputs change
+        onSubmit={handleSubmit} // Handle final submission
+        resetAfterSubmit={true}
+      />
     </div>
   );
 }

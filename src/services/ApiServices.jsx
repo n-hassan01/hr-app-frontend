@@ -1,8 +1,8 @@
 import axios from 'axios';
 // import getCookieService from './GetCookieService';
 
-const usersUrl = 'http://182.160.114.100:8081/';
-// const usersUrl = 'http://localhost:8081/';
+// const usersUrl = 'http://182.160.114.100:8081/';
+const usersUrl = import.meta.env.VITE_REACT_APP_BASE_URL || 'http://182.160.114.100:8081/';
 
 export const login = async (user) => {
   console.log(user);
@@ -79,6 +79,16 @@ export const addCandidateInfoService = async (bodyInfo) => {
   }
 };
 
+export const updateCandidateInfoService = async (bodyInfo) => {
+  try {
+    return await axios.put(`${usersUrl}api/candidates/update/byNumber`, bodyInfo);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
 export const addCandidateExperienceInfoService = async (bodyInfo) => {
   try {
     return await axios.post(`${usersUrl}api/experience/add`, bodyInfo);
@@ -99,9 +109,29 @@ export const addCandidateFacilitiesInfoService = async (bodyInfo) => {
   }
 };
 
+export const getCandidateFacilitiesByCandidateInfoService = async (bodyInfo, type) => {
+  try {
+    return await axios.post(`${usersUrl}api/facilities/byCandidate/${type}`, bodyInfo);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
 export const getCandidatesService = async () => {
   try {
     return await axios.get(`${usersUrl}api/candidates/all`);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const getCandidateByNumberService = async (number) => {
+  try {
+    return await axios.get(`${usersUrl}api/candidates/${number}`);
   } catch (err) {
     console.log(err.message);
 

@@ -59,7 +59,10 @@ export default function EvaluationFormPage() {
   };
 
   const handleSubmit = async (data) => {
-    console.log('Submitted Data:', data);
+    if (!data.candidateNumber) {
+      alert('Please select a candidate!');
+      return;
+    }
 
     if (selectedCandidate) {
       try {
@@ -115,8 +118,11 @@ export default function EvaluationFormPage() {
   };
 
   const candidateOptions = candidateList
-    .filter((option) => option.fullName.toLowerCase().includes(inputValue.toLowerCase()))
-    .map((option) => ({ value: option.candidateNumber, label: option.fullName + ' ' + option.contactNumber }));
+    .filter((option) => option?.fullName?.toLowerCase().includes(inputValue?.toLowerCase() || ''))
+    .map((option) => ({
+      value: option?.candidateNumber || null,
+      label: `${option?.fullName || ''} ${option?.contactNumber || ''}`.trim()
+    }));
 
   const handleCandidateSelection = (selectedOption) => {
     setSelectedCandidate(selectedOption.value);
@@ -166,14 +172,21 @@ export default function EvaluationFormPage() {
           />
         </div>
       </div>
-      <Form
-        fields={fields}
-        initialValues={formData} // Pass the form data, including calculated fields
-        rowsConfig={[3, 3, 3]}
-        onFormChange={handleFormChange} // Update calculations when inputs change
-        onSubmit={handleSubmit} // Handle final submission
-        resetAfterSubmit={true}
-      />
+
+      <div
+        style={{
+          display: selectedCandidate ? 'block' : 'none'
+        }}
+      >
+        <Form
+          fields={fields}
+          initialValues={formData} // Pass the form data, including calculated fields
+          rowsConfig={[3, 3, 3]}
+          onFormChange={handleFormChange} // Update calculations when inputs change
+          onSubmit={handleSubmit} // Handle final submission
+          resetAfterSubmit={true}
+        />
+      </div>
     </div>
   );
 }

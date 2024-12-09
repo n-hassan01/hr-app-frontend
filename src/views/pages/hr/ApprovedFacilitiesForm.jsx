@@ -1,69 +1,67 @@
 /* eslint-disable no-unused-vars */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getUserData } from '../../../context/UserContext';
-import { addEvaluationForm } from '../../../services/ApiServices';
 import Form from '../../utilities/Form';
 
-export default function ExpectedStatusForm() {
+// api services
+import { addCandidateFacilitiesInfoService, getCandidateFacilitiesByCandidateInfoService } from '../../../services/ApiServices';
+
+export default function ExpectedStatusForm({ candidateNumber }) {
   const user = getUserData();
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    facilityType: 'APPROVED',
+    company: '',
+    sbu: '',
+    department: '',
+    jobGrade: '',
+    reportsTo: '',
+    jobLocation: '',
+    designation: '',
+    salary: null,
+    bonus: '',
+    taOrConveyance: '',
+    daOrFood: '',
+    benefitOrAllowance: '',
+    pfOrGratuity: '',
+    transportFacility: '',
+    incentiveOrKpi: '',
+    mobileCeiling: '',
+    totalCtc: ''
+  });
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const requestBody = {
+          candidateNumber: candidateNumber
+        };
 
-  // Calculate derived fields when form data changes
-  const calculateDerivedFields = (data) => {
-    const fieldsToSum = ['attire_body_language', 'work_knowledge', 'team_player', 'problem_solving_skill', 'communication_skill'];
+        const response = await getCandidateFacilitiesByCandidateInfoService(requestBody, 'APPROVED');
+        if (response.data?.statusCode === 200) {
+          setFormData(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching account details:', error);
+      }
+    }
 
-    const totalMarks = fieldsToSum.reduce((total, field) => total + (parseFloat(data[field]) || 0), 0);
-    const performance =
-      totalMarks >= 45 ? 'Outstanding' : totalMarks >= 31 ? 'Good' : totalMarks >= 23 ? 'Average' : totalMarks >= 17 ? 'Fair' : 'Poor';
-
-    return {
-      ...data,
-      total_marks: totalMarks,
-      average_marks: totalMarks / fieldsToSum.length,
-      performance
-    };
-  };
-
-  // const getCandidateData = async (data) => {
-  //   const { date_of_evaluation } = data;
-
-  //   // Log the date_of_evaluation and the calculated values
-  //   console.log('Date of Evaluation:', date_of_evaluation);
-
-  //   const response = await getCandidateList(date_of_evaluation);
-  //   console.log(response);
-
-  //   if (response.status === 200) {
-  //     alert('Data Saved Successfully');
-  //   } else {
-  //     alert('Process failed! Try again');
-  //   }
-  //   return {
-  //     response
-  //   };
-  // };
+    fetchData();
+  }, [candidateNumber]);
 
   const handleFormChange = async (data) => {
     console.log(data);
-
-    // const updatedData = calculateDerivedFields(data); // Calculate derived fields
-    // const candidateData = getCandidateData(data); // Update state with new data
-    // console.log(candidateData);
   };
-  console.log(formData);
 
   const handleSubmit = async (data) => {
-    console.log('Submitted Data:', data);
-
-    const requestBody = {
-      key: { candidateNumber: 1, submittedBy: user?.id },
-      submittedDate: new Date(),
-      ...data
-    };
-
     try {
-      const response = await addEvaluationForm(requestBody, user.token);
-      if (response.status === 200) {
+      const requestBody = {
+        ...data,
+        candidate: {
+          candidateNumber: candidateNumber
+        }
+      };
+      const response = await addCandidateFacilitiesInfoService(requestBody);
+
+      if (response.data?.statusCode === 200) {
         alert('Data Saved Successfully');
       } else {
         alert('Process failed! Try again');
@@ -74,26 +72,25 @@ export default function ExpectedStatusForm() {
   };
 
   const fields = [
-    { label: 'Company', name: 'company', type: 'text', placeholder: 'Enter Company Name' },
-    { label: 'SBU', name: 'sbu', type: 'text', placeholder: 'Enter SBU' },
-    { label: 'Department', name: 'department', type: 'text', placeholder: 'Enter Department Name' },
-    { label: 'Reports to', name: 'reportsTo', type: 'text', placeholder: 'Enter ReportsTo Name' },
-    { label: 'Designation', name: 'designation', type: 'text', placeholder: 'Enter Designation Name' },
-    { label: 'Salary', name: 'salary', type: 'number', placeholder: 'Enter Salary ' },
-    { label: 'Bonus', name: 'bonus', type: 'text', placeholder: 'Enter Bonus ' },
-    { label: 'TA/Conveyance', name: 'taOrConveyance', type: 'text', placeholder: 'Enter Ta/Conveyance' },
-    { label: 'DA/Food', name: 'daOrFood', type: 'text', placeholder: 'Enter DA/Food' },
+    { label: 'Company', name: 'company', type: 'text' },
+    { label: 'SBU', name: 'sbu', type: 'text' },
+    { label: 'Department', name: 'department', type: 'text' },
+    { label: 'Reports to', name: 'reportsTo', type: 'text' },
+    { label: 'Designation', name: 'designation', type: 'text' },
+    { label: 'Salary', name: 'salary', type: 'number' },
+    { label: 'Bonus', name: 'bonus', type: 'text' },
+    { label: 'TA/Conveyance', name: 'taOrConveyance', type: 'text' },
+    { label: 'DA/Food', name: 'daOrFood', type: 'text' },
     {
       label: 'Benefit/Allowance',
       name: 'benefitOrAllowance',
-      type: 'text',
-      placeholder: 'Enter Benefit/Allowance'
+      type: 'text'
     },
-    { label: 'PF/Gratuity', name: 'pfOrGratuity', type: 'text', placeholder: 'Enter PF/Gratuity' },
-    { label: 'Transport Facility', name: 'transportFacility', type: 'text', placeholder: 'Enter Transport Facility' },
-    { label: 'Incentive/Kpi', name: 'incentiveOrKpi', type: 'text', placeholder: 'Enter Incentive/Kpi' },
-    { label: 'Mobile Ceiling', name: 'mobileCeiling', type: 'text', placeholder: 'Enter Mobile Ceiling' },
-    { label: 'Total Ctc', name: 'totalCtc', type: 'text', placeholder: 'Enter Total Ctc' }
+    { label: 'PF/Gratuity', name: 'pfOrGratuity', type: 'text' },
+    { label: 'Transport Facility', name: 'transportFacility', type: 'text' },
+    { label: 'Incentive/Kpi', name: 'incentiveOrKpi', type: 'text' },
+    { label: 'Mobile Ceiling', name: 'mobileCeiling', type: 'text' },
+    { label: 'Total Ctc', name: 'totalCtc', type: 'text' }
   ];
 
   return (

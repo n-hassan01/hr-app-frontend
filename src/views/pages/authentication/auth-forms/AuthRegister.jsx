@@ -2,6 +2,7 @@
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Box, Button, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, OutlinedInput } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useState } from 'react';
@@ -16,7 +17,7 @@ const AuthRegister = ({ ...others }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(true);
   const [alertMessage, setAlertMessage] = useState('');
-  const [alertSeverity, setAlertSeverity] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState('success');
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -28,23 +29,31 @@ const AuthRegister = ({ ...others }) => {
 
   const handleSubmit = async (data) => {
     const requestBody = {
-      username: data.email,
+      username: data.username,
       password: data.password,
       status: 'APPROVED',
-      roleId: 2
+      role: {
+        id: 2,
+        title: 'INTERVIEWER',
+        status: 'ACTIVE'
+      },
+      activeDate: new Date(),
+      inactiveDate: null
     };
 
     console.log('Request Body:', requestBody);
 
     try {
       const response = await signUpForm(requestBody);
+
       if (response.status === 200) {
-        setAlertMessage('Data Saved Successfully! Please login now');
+        setAlertMessage('Account Create Successfully! Please login now');
         setAlertSeverity('success');
-        navigate('/pages/login/login3', { replace: true });
+
+        // Delay navigation to ensure alert is visible
         setTimeout(() => {
-          setAlertMessage('');
-        }, 1000);
+          navigate('/pages/login/login3', { replace: true });
+        }, 1500);
       } else {
         setAlertMessage('Process failed! Try again');
         setAlertSeverity('error');
@@ -53,43 +62,52 @@ const AuthRegister = ({ ...others }) => {
       console.error('Error submitting form:', error);
       setAlertMessage('An error occurred! Please try again.');
       setAlertSeverity('error');
+    } finally {
+      // Clear alert after 3 seconds
+      setTimeout(() => {
+        setAlertMessage('');
+      }, 3000);
     }
   };
 
   return (
     <Formik
       initialValues={{
-        email: '',
+        username: '',
         password: ''
       }}
       validationSchema={Yup.object().shape({
-        email: Yup.string().max(255).required('Username is required'),
-        // email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+        username: Yup.string().max(255).required('UserName is required'),
         password: Yup.string().max(255).required('Password is required')
       })}
       onSubmit={handleSubmit}
     >
       {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
         <form noValidate onSubmit={handleSubmit} {...others}>
-          <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-            <InputLabel htmlFor="outlined-adornment-email-register">Email Address / Username</InputLabel>
+          {alertMessage && (
+            <Alert variant="filled" severity={alertSeverity} sx={{ mb: 2 }}>
+              {alertMessage}
+            </Alert>
+          )}
+
+          <FormControl fullWidth error={Boolean(touched.username && errors.username)} sx={{ ...theme.typography.customInput }}>
+            <InputLabel htmlFor="outlined-adornment-username-register">UserName</InputLabel>
             <OutlinedInput
-              id="outlined-adornment-email-register"
-              type="email"
-              value={values.email}
-              name="email"
+              id="outlined-adornment-username-register"
+              type="username"
+              value={values.username}
+              name="username"
               onBlur={handleBlur}
               onChange={handleChange}
               inputProps={{}}
             />
-            {touched.email && errors.email && (
+            {touched.username && errors.username && (
               <FormHelperText error id="standard-weight-helper-text--register">
-                {errors.email}
+                {errors.username}
               </FormHelperText>
             )}
           </FormControl>
 
-          {/* Add similar fields for other inputs */}
           <FormControl fullWidth error={Boolean(touched.password && errors.password)} sx={{ ...theme.typography.customInput }}>
             <InputLabel htmlFor="outlined-adornment-password-register">Password</InputLabel>
             <OutlinedInput

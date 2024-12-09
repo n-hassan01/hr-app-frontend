@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 // import Divider from '@mui/material/Divider';
+import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -48,7 +49,8 @@ const AuthLogin = ({ ...others }) => {
 
   const [checked, setChecked] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState('success');
   // const googleHandler = async () => {
   //   console.error('Login');
   // };
@@ -70,24 +72,31 @@ const AuthLogin = ({ ...others }) => {
 
       if (response.request.status === 200) {
         const token = response.data;
-        console.log(token);
-        // loginUser(token);
-        console.log(localStorage);
         localStorage.setItem('user', JSON.stringify(token));
-        console.log(localStorage);
-        // const storedUser = localStorage.getItem('user');
-        // console.log(storedUser);
-        // const parsedUser = JSON.parse(storedUser);
-        // console.log(parsedUser);
+        setAlertMessage('Login Successfully');
+        setAlertSeverity('success');
 
-        navigate('/dashboard/default', { replace: true });
+        // Delay navigation to ensure the alert is visible
+        setTimeout(() => {
+          navigate('/dashboard/default', { replace: true });
+        }, 1500);
       } else {
-        alert('Authentication failed! Please SignUp');
-        navigate('/pages/register/register3', { replace: true });
+        setAlertMessage('Authentication Denied! SignUp First');
+        setAlertSeverity('error');
+
+        // Delay navigation to ensure the alert is visible
+        setTimeout(() => {
+          navigate('/pages/register/register3', { replace: true });
+        }, 1500);
       }
     } catch (err) {
-      console.log(err.message);
-      alert('Authentication failed! Try again');
+      setAlertMessage('Authentication failed! Please try again.');
+      setAlertSeverity('error');
+
+      // Keep the alert visible for 1.5 seconds before clearing
+      setTimeout(() => {
+        setAlertMessage('');
+      }, 1500);
     }
   };
 
@@ -180,8 +189,13 @@ const AuthLogin = ({ ...others }) => {
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
+            {alertMessage && (
+              <Alert variant="filled" severity={alertSeverity} sx={{ mb: 2 }}>
+                {alertMessage}
+              </Alert>
+            )}
             <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
+              <InputLabel htmlFor="outlined-adornment-email-login">UserName</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-email-login"
                 type="username"

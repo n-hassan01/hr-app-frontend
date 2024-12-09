@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -6,36 +7,31 @@ import { getUserData } from '../../../../context/UserContext';
 // material-ui
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+// import Card from '@mui/material/Card';
+// import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
-import InputAdornment from '@mui/material/InputAdornment';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
-import Switch from '@mui/material/Switch';
+// import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 // project imports
-import User1 from 'assets/images/users/user-round.svg';
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
-import UpgradePlanCard from './UpgradePlanCard';
 
 // assets
-import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons-react';
+import { IconLogout, IconSettings } from '@tabler/icons-react';
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -46,9 +42,9 @@ const ProfileSection = () => {
   const user = getUserData();
   console.log(user);
 
-  const [sdm, setSdm] = useState(true);
-  const [value, setValue] = useState('');
-  const [notification, setNotification] = useState(false);
+  // const [sdm, setSdm] = useState(true);
+  // const [value, setValue] = useState('');
+  // const [notification, setNotification] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [open, setOpen] = useState(false);
   /**
@@ -112,7 +108,7 @@ const ProfileSection = () => {
         }}
         icon={
           <Avatar
-            src={User1}
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3UHtZIMMzD_pxlXLnKdeBEvJrBZEWk7sVRA&s"
             sx={{
               ...theme.typography.mediumAvatar,
               margin: '8px 0 8px 8px !important',
@@ -159,7 +155,7 @@ const ProfileSection = () => {
                     <Stack>
                       <Stack>
                         <Stack direction="row" spacing={0.5} alignItems="center">
-                          <Typography variant="h4">Good Morning,</Typography>
+                          <Typography variant="h4">Welcome,</Typography>
                           <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
                             {user.username}
                           </Typography>
@@ -168,7 +164,7 @@ const ProfileSection = () => {
                       </Stack>
                       {/* <Typography variant="subtitle2">Project Admin</Typography> */}
                     </Stack>
-                    <OutlinedInput
+                    {/* <OutlinedInput
                       sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}
                       id="input-search-profile"
                       value={value}
@@ -183,14 +179,14 @@ const ProfileSection = () => {
                       inputProps={{
                         'aria-label': 'weight'
                       }}
-                    />
+                    /> */}
                     <Divider />
                   </Box>
                   <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                     <Box sx={{ p: 2, pt: 0 }}>
-                      <UpgradePlanCard />
-                      <Divider />
-                      <Card
+                      {/* <UpgradePlanCard />
+                      <Divider /> */}
+                      {/* <Card
                         sx={{
                           bgcolor: theme.palette.primary.light,
                           my: 2
@@ -231,7 +227,7 @@ const ProfileSection = () => {
                             </Grid>
                           </Grid>
                         </CardContent>
-                      </Card>
+                      </Card> */}
                       <Divider />
                       <List
                         component="nav"
@@ -259,7 +255,7 @@ const ProfileSection = () => {
                           </ListItemIcon>
                           <ListItemText primary={<Typography variant="body2">Account Settings</Typography>} />
                         </ListItemButton>
-                        <ListItemButton
+                        {/* <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}
                           selected={selectedIndex === 1}
                           onClick={(event) => handleListItemClick(event, 1, '#')}
@@ -286,7 +282,7 @@ const ProfileSection = () => {
                               </Grid>
                             }
                           />
-                        </ListItemButton>
+                        </ListItemButton> */}
                         <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}
                           selected={selectedIndex === 4}

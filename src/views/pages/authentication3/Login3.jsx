@@ -58,6 +58,21 @@ const Login = () => {
                       <Typography component={Link} to="/pages/register/register3" variant="subtitle1" sx={{ textDecoration: 'none' }}>
                         Don&apos;t have an account?
                       </Typography>
+                      <Typography
+                        component={Link}
+                        to="/candidates/form"
+                        variant="subtitle1"
+                        sx={{
+                          marginTop: '5px',
+                          textDecoration: 'underline', // Adds underline
+                          color: 'secondary.main', // Sets text color to blue
+                          '&:hover': {
+                            textDecoration: 'none' // Optional: Removes underline on hover
+                          }
+                        }}
+                      >
+                        Are you a Candidate? Click Here
+                      </Typography>
                     </Grid>
                   </Grid>
                 </Grid>

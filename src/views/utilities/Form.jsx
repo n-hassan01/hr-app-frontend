@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
 
-const Form = ({ fields, initialValues, onFormChange, onSubmit, resetAfterSubmit, rowsConfig }) => {
+const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSubmit, rowsConfig }) => {
   const [formValues, setFormValues] = useState(() => {
     const defaultValues = fields.reduce((acc, field) => {
       if (field.defaultValue !== undefined) {
@@ -14,10 +14,11 @@ const Form = ({ fields, initialValues, onFormChange, onSubmit, resetAfterSubmit,
   });
 
   useEffect(() => {
-    if (initialValues) {
-      const updatedValues = { ...formValues, ...initialValues };
-      setFormValues(updatedValues); // Sync with initial values
-    }
+    // Sync state with updated initialValues if they change
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      ...initialValues
+    }));
   }, [initialValues]);
 
   const handleChange = (name, value) => {
@@ -29,7 +30,7 @@ const Form = ({ fields, initialValues, onFormChange, onSubmit, resetAfterSubmit,
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formValues); // Submit all form data
-    if (resetAfterSubmit) setFormValues({}); // Reset form after submit
+    if (resetAfterSubmit) setFormValues(initializeFormValues()); // Reset form after submit
   };
 
   const responsiveStyles = {
@@ -130,6 +131,15 @@ const Form = ({ fields, initialValues, onFormChange, onSubmit, resetAfterSubmit,
                       </option>
                     ))}
                   </select>
+                ) : field.type === 'textarea' ? ( // Handle textarea
+                  <textarea
+                    name={field.name}
+                    value={formValues[field.name] || ''}
+                    placeholder={field.placeholder}
+                    readOnly={field.readOnly || false}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    style={{ ...responsiveStyles.input, height: '100px', resize: 'vertical' }} // Additional styles for textarea
+                  />
                 ) : (
                   <input
                     type={field.type}

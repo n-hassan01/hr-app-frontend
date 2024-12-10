@@ -132,8 +132,11 @@ export default function EvaluationFormPage() {
   };
 
   const candidateOptions = candidateList
-    .filter((option) => option.fullName.toLowerCase().includes(inputValue.toLowerCase()))
-    .map((option) => ({ value: option.candidateNumber, label: option.fullName + ' ' + option.contactNumber }));
+    .filter((option) => option?.fullName?.toLowerCase().includes(inputValue?.toLowerCase() || ''))
+    .map((option) => ({
+      value: option?.candidateNumber || null,
+      label: `${option?.fullName || ''} ${option?.contactNumber || ''}`.trim()
+    }));
 
   const handleCandidateSelection = (selectedOption) => {
     setSelectedCandidate(selectedOption.value);

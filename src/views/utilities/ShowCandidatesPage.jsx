@@ -3,8 +3,12 @@ import Grid from '@mui/material/Grid';
 import Portal from '@mui/material/Portal';
 import { DataGrid, GridToolbar, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import * as React from 'react';
+import ReactDOMServer from 'react-dom/server';
+
 import { useEffect, useRef, useState } from 'react';
-import { getCandidatesService } from '../../services/ApiServices';
+import { getUserData } from '../../context/UserContext';
+import InterviewEvaluationForm from '../../reports/InterviewEvaluationForm';
+import { getCandidateByNumberService, getCandidatesService, updateCandidateStatusService } from '../../services/ApiServices';
 
 function MyCustomToolbar(props) {
   return (
@@ -18,6 +22,8 @@ function MyCustomToolbar(props) {
 }
 
 export default function QuickFilterOutsideOfGrid() {
+  const user = getUserData();
+
   const [candidateList, setCandidateList] = useState([]);
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,32 +41,59 @@ export default function QuickFilterOutsideOfGrid() {
 
           // Define your custom columns and map the data to match the headers
           const customColumns = [
-            { field: 'interviewDate', headerName: 'Interview Date', minWidth: 200, flex: 1 },
-            { field: 'candidateNumber', headerName: 'Candidate Number', minWidth: 150, flex: 1 },
-            { field: 'fullName', headerName: 'Candidate Name', minWidth: 200, flex: 1 },
-            { field: 'nidNumber', headerName: 'NID_Number', minWidth: 150, flex: 1 },
-            { field: 'email', headerName: 'Email', minWidth: 250, flex: 1 },
-            { field: 'contactNumber', headerName: 'Contact Number', minWidth: 150, flex: 1 },
+            { field: 'candidateNumber', headerName: 'Candidate Number' },
+            { field: 'interviewDate', headerName: 'Interview Date', flex: 1 },
+            { field: 'fullName', headerName: 'Candidate Name', flex: 1 },
+            { field: 'nidNumber', headerName: 'NID Number', flex: 1 },
+            { field: 'email', headerName: 'Email' },
+            { field: 'contactNumber', headerName: 'Contact Number' },
             {
-              field: 'export',
-              headerName: 'Export',
-              minWidth: 150,
+              field: 'action',
+              headerName: 'Action',
               flex: 1,
               sortable: false,
               renderCell: (params) => (
-                <button
-                  onClick={() => handlePrint(params.row)}
-                  style={{
-                    padding: '5px 10px',
-                    border: '1px solid #ccc',
-                    borderRadius: '5px',
-                    background: '#1976d2',
-                    color: '#fff',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Print
-                </button>
+                <div style={{ display: 'flex', gap: '5px', padding: '10px 0' }}>
+                  <button
+                    onClick={() => updateCandidateStatus(params.row, 'HIRED')}
+                    style={{
+                      padding: '7px',
+                      border: '1px solid #ccc',
+                      borderRadius: '5px',
+                      background: 'green',
+                      color: '#fff',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Hired
+                  </button>
+                  <button
+                    onClick={() => updateCandidateStatus(params.row, 'REJECTED')}
+                    style={{
+                      padding: '7px',
+                      border: '1px solid #ccc',
+                      borderRadius: '5px',
+                      background: 'crimson',
+                      color: '#fff',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Rejected
+                  </button>
+                  <button
+                    onClick={() => handlePrint(params.row)}
+                    style={{
+                      padding: '7px',
+                      border: '1px solid #ccc',
+                      borderRadius: '5px',
+                      background: '#673ab7',
+                      color: '#fff',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Print
+                  </button>
+                </div>
               )
             }
           ];
@@ -87,53 +120,108 @@ export default function QuickFilterOutsideOfGrid() {
   }, []);
 
   // Print function
-  const handlePrint = (row) => {
-    // Generate print content for the specific row
-    const printContent = `
-      <html>
-        <head>
-          <title>Print Candidate Details</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              padding: 20px;
+  const handlePrint = async (row) => {
+    console.log('helli');
+    if (!row || !row.candidateNumber) {
+      console.error('Invalid row data. "candidateNumber" is required.');
+      return;
+    }
+
+    try {
+      const response = await getCandidateByNumberService(row.candidateNumber);
+
+      if (response.data?.statusCode === 200) {
+        const printContent = ReactDOMServer.renderToString(<InterviewEvaluationForm candidate={response.data.data} />);
+
+        // Safely extract styles from the current document
+        const styles = Array.from(document.styleSheets)
+          .map((styleSheet) => {
+            try {
+              return Array.from(styleSheet.cssRules)
+                .map((rule) => rule.cssText)
+                .join('\n');
+            } catch (e) {
+              console.warn('Could not access stylesheet:', styleSheet, e);
+              return ''; // Skip inaccessible stylesheets (e.g., cross-origin issues)
             }
-            h3 {
-              color: #333;
+          })
+          .join('\n');
+
+        // Add page-break CSS directly for print
+        const pageBreakCSS = `
+          @media print {
+            .page-break-after {
+              page-break-after: always;
             }
-            pre {
-              background: #f4f4f4;
-              padding: 10px;
-              border: 1px solid #ccc;
-              border-radius: 5px;
-              overflow-x: auto;
+            .page-break-before {
+              page-break-before: always;
             }
-          </style>
-        </head>
-        <body>
-          <h3>Candidate Details</h3>
-          <pre>${JSON.stringify(row, null, 2)}</pre>
-        </body>
-      </html>
-    `;
+            .page-break-inside {
+              page-break-inside: avoid;
+            }
+          }
+        `;
 
-    // Open a new window
-    const newWindow = window.open('', '_blank', 'width=800,height=600');
+        // Construct the full HTML for the new print window
+        const fullHTML = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Print Preview</title>
+              <style>
+                ${styles}
+                ${pageBreakCSS}
+              </style>
+            </head>
+            <body>
+              ${printContent}
+            </body>
+          </html>
+        `;
 
-    if (newWindow) {
-      // Write content to the new window
-      newWindow.document.open();
-      newWindow.document.write(printContent);
-      newWindow.document.close();
+        // Open a new window for printing
+        const newWindow = window.open('', '_blank', 'width=800,height=600');
+        if (newWindow) {
+          // Write the full HTML content to the new window
+          newWindow.document.open();
+          newWindow.document.write(fullHTML);
+          newWindow.document.close();
 
-      // Focus and trigger print
-      newWindow.focus();
-      newWindow.print();
+          // Focus the new window and trigger the print dialog
+          newWindow.focus();
+          newWindow.print();
 
-      // Optional: Close the new window after printing
-      newWindow.close();
-    } else {
-      console.error('Failed to open a new print window. Please check your browser settings.');
+          // Optionally close the new window after printing
+          setTimeout(() => newWindow.close(), 1000);
+        } else {
+          console.error('Failed to open a new print window. Please check your browser settings.');
+        }
+      } else {
+        console.error('Failed to fetch candidate details. Status code:', response.data?.statusCode);
+      }
+    } catch (error) {
+      console.error('Error fetching candidate details:', error);
+    }
+  };
+
+  const updateCandidateStatus = async (row, value) => {
+    if (!row || !row.candidateNumber) {
+      console.error('Invalid row data. "candidateNumber" is required.');
+      return;
+    }
+
+    try {
+      const requestBody = {
+        candidateNumber: row.candidateNumber,
+        status: value
+      };
+      const response = await updateCandidateStatusService(requestBody, user.token);
+
+      const alertMessage = response.data?.statusCode === 200 ? `Successfully ${value}!` : 'Process failed! Try again';
+      alert(alertMessage);
+    } catch (error) {
+      console.error('Error fetching candidate details:', error);
+      alert(`Error: ${error.message}`);
     }
   };
 
@@ -142,7 +230,7 @@ export default function QuickFilterOutsideOfGrid() {
       <Grid item>
         <Box id="filter-panel" />
       </Grid>
-      <Grid item style={{ height: 400, width: '100%' }}>
+      <Grid item style={{ width: '100%', overflow: 'auto' }}>
         <div ref={tableRef}>
           <DataGrid
             rows={candidateList}

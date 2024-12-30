@@ -28,7 +28,6 @@ export default function QuickFilterOutsideOfGrid() {
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Ref for the table container to print only the table
   const tableRef = useRef();
 
   useEffect(() => {
@@ -37,9 +36,7 @@ export default function QuickFilterOutsideOfGrid() {
         const response = await getCandidatesService(); // API endpoint
         if (response.data.statusCode === 200) {
           const data = response.data.data;
-          console.log(data);
 
-          // Define your custom columns and map the data to match the headers
           const customColumns = [
             { field: 'candidateNumber', headerName: 'Candidate Number' },
             { field: 'interviewDate', headerName: 'Interview Date', flex: 1 },
@@ -98,7 +95,6 @@ export default function QuickFilterOutsideOfGrid() {
             }
           ];
 
-          // Filter the data to include only the defined columns
           const filteredData = data.map((row) =>
             customColumns.reduce((acc, col) => {
               acc[col.field] = row[col.field];
@@ -119,9 +115,7 @@ export default function QuickFilterOutsideOfGrid() {
     fetchData();
   }, []);
 
-  // Print function
   const handlePrint = async (row) => {
-    console.log('helli');
     if (!row || !row.candidateNumber) {
       console.error('Invalid row data. "candidateNumber" is required.');
       return;
@@ -147,7 +141,6 @@ export default function QuickFilterOutsideOfGrid() {
           })
           .join('\n');
 
-        // Add page-break CSS directly for print
         const pageBreakCSS = `
           @media print {
             .page-break-after {
@@ -162,8 +155,19 @@ export default function QuickFilterOutsideOfGrid() {
           }
         `;
 
-        // Construct the full HTML for the new print window
-        const fullHTML = `
+        // Create a hidden iframe for printing
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'absolute';
+        iframe.style.top = '-10000px';
+        iframe.style.left = '-10000px';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.visibility = 'hidden';
+        document.body.appendChild(iframe);
+
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(`
           <!DOCTYPE html>
           <html>
             <head>
@@ -177,25 +181,17 @@ export default function QuickFilterOutsideOfGrid() {
               ${printContent}
             </body>
           </html>
-        `;
+        `);
+        iframeDoc.close();
 
-        // Open a new window for printing
-        const newWindow = window.open('', '_blank', 'width=800,height=600');
-        if (newWindow) {
-          // Write the full HTML content to the new window
-          newWindow.document.open();
-          newWindow.document.write(fullHTML);
-          newWindow.document.close();
+        // Trigger the print dialog
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
 
-          // Focus the new window and trigger the print dialog
-          newWindow.focus();
-          newWindow.print();
-
-          // Optionally close the new window after printing
-          setTimeout(() => newWindow.close(), 1000);
-        } else {
-          console.error('Failed to open a new print window. Please check your browser settings.');
-        }
+        // Clean up the iframe after printing
+        iframe.contentWindow.onafterprint = () => {
+          document.body.removeChild(iframe);
+        };
       } else {
         console.error('Failed to fetch candidate details. Status code:', response.data?.statusCode);
       }

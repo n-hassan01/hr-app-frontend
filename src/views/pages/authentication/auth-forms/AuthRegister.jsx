@@ -32,16 +32,16 @@ const AuthRegister = ({ ...others }) => {
       username: data.username,
       password: data.password,
       status: 'APPROVED',
-      role: {
-        id: 2,
-        title: 'INTERVIEWER',
-        status: 'ACTIVE'
-      },
+      roles: [
+        {
+          id: 2,
+          title: 'INTERVIEWER',
+          status: 'ACTIVE'
+        }
+      ],
       activeDate: new Date(),
       inactiveDate: null
     };
-
-    console.log('Request Body:', requestBody);
 
     try {
       const response = await signUpForm(requestBody);

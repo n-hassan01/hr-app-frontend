@@ -40,10 +40,11 @@ export default function QuickFilterOutsideOfGrid() {
           const customColumns = [
             { field: 'candidateNumber', headerName: 'Candidate Number' },
             { field: 'interviewDate', headerName: 'Interview Date', flex: 1 },
-            { field: 'fullName', headerName: 'Candidate Name', flex: 1 },
-            { field: 'nidNumber', headerName: 'NID Number', flex: 1 },
+            { field: 'fullName', headerName: 'Name', flex: 1 },
+            { field: 'status', headerName: 'Status', flex: 1 },
+            { field: 'nidNumber', headerName: 'NID', flex: 1 },
             { field: 'email', headerName: 'Email' },
-            { field: 'contactNumber', headerName: 'Contact Number' },
+            { field: 'contactNumber', headerName: 'Contact' },
             {
               field: 'action',
               headerName: 'Action',
@@ -57,8 +58,8 @@ export default function QuickFilterOutsideOfGrid() {
                       padding: '7px',
                       border: '1px solid #ccc',
                       borderRadius: '5px',
-                      background: 'green',
-                      color: '#fff',
+                      background: params.row.status === 'HIRED' ? '#0d6efd' : '',
+                      // color: '#fff',
                       cursor: 'pointer'
                     }}
                   >
@@ -70,8 +71,8 @@ export default function QuickFilterOutsideOfGrid() {
                       padding: '7px',
                       border: '1px solid #ccc',
                       borderRadius: '5px',
-                      background: 'crimson',
-                      color: '#fff',
+                      background: params.row.status === 'REJECTED' ? '#dc3545' : '',
+                      // color: '#fff',
                       cursor: 'pointer'
                     }}
                   >
@@ -83,8 +84,8 @@ export default function QuickFilterOutsideOfGrid() {
                       padding: '7px',
                       border: '1px solid #ccc',
                       borderRadius: '5px',
-                      background: '#673ab7',
-                      color: '#fff',
+                      // background: '#673ab7',
+                      // color: 'black',
                       cursor: 'pointer'
                     }}
                   >
@@ -201,6 +202,7 @@ export default function QuickFilterOutsideOfGrid() {
   };
 
   const updateCandidateStatus = async (row, value) => {
+    console.log(row);
     if (!row || !row.candidateNumber) {
       console.error('Invalid row data. "candidateNumber" is required.');
       return;

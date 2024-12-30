@@ -182,3 +182,13 @@ export const getCandidatesByDateService = async (interviewDate) => {
     return err.message;
   }
 };
+
+export const getCandidatesByStatusService = async (status, upperLimit, lowerLimit) => {
+  try {
+    return await axios.get(`${usersUrl}api/candidates/byStatus?status=${status}&upperLimit=${upperLimit}&lowerLimit=${lowerLimit}`);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};

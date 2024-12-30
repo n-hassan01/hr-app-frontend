@@ -34,7 +34,7 @@ const Header = ({ handleLeftDrawerToggle }) => {
       >
         <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>
           {/* <LogoSection /> */}
-          <h1> Herlan HR App</h1>
+          <h1> HR APP</h1>
         </Box>
         <ButtonBase sx={{ borderRadius: '8px', overflow: 'hidden', marginLeft: '5px' }}>
           <Avatar

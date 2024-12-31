@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
 import { DataGrid, GridToolbarDensitySelector } from '@mui/x-data-grid';
@@ -23,15 +22,15 @@ function MyCustomToolbar(props) {
       <div style={{ padding: 8, display: 'none', alignItems: 'center' }}>
         <GridToolbarDensitySelector {...props} />
       </div>
-      {/* <GridToolbar {...customProps} /> */}
     </React.Fragment>
   );
 }
 
-export default function CurrentDateCandidates({ isLoading }) {
+export default function CurrentDateCandidates() {
   const [candidateList, setCandidateList] = useState([]);
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Ref for the table container to print only the table
   const tableRef = useRef();
@@ -49,7 +48,6 @@ export default function CurrentDateCandidates({ isLoading }) {
           // Define your custom columns and map the data to match the headers
           const customColumns = [
             { field: 'candidateNumber', headerName: 'Number' },
-            // { field: 'interviewDate', headerName: 'Interview Date', flex: 1 },
             { field: 'fullName', headerName: 'Name', flex: 1 },
             { field: 'nidNumber', headerName: 'NID', flex: 1 },
             { field: 'email', headerName: 'Email', flex: 1 },
@@ -71,6 +69,7 @@ export default function CurrentDateCandidates({ isLoading }) {
         console.error('Error fetching candidate details:', error);
       } finally {
         setLoading(false);
+        setIsLoading(false);
       }
     }
 
@@ -84,29 +83,33 @@ export default function CurrentDateCandidates({ isLoading }) {
       ) : (
         <MainCard content={false}>
           <CardContent>
-            <Grid item mb={1}>
-              <Typography variant="h4">Today's Interviewees</Typography>
-            </Grid>
-
-            <Grid container spacing={2} style={{ backgroundColor: 'white' }}>
-              <Grid item>
-                <Box id="filter-panel" />
+            {candidateList.length === 0 ? (
+              <Grid item xs={12}>
+                <Typography variant="h5" align="center">
+                  No Interviewee available for today.
+                </Typography>
               </Grid>
-              <Grid item style={{ width: '100%', overflow: 'auto' }}>
-                <div ref={tableRef}>
-                  <DataGrid
-                    rows={candidateList}
-                    columns={columns}
-                    loading={loading}
-                    getRowId={(row) => row.candidateNumber} // Adjust as per your API's unique identifier
-                    slots={{
-                      toolbar: MyCustomToolbar
-                    }}
-                    density="compact"
-                  />
-                </div>
+            ) : (
+              <Grid container spacing={2} style={{ backgroundColor: 'white' }}>
+                <Grid item mb={1}>
+                  <Typography variant="h4">Today's Interviewees</Typography>
+                </Grid>
+                <Grid item style={{ width: '100%', overflow: 'auto' }}>
+                  <div ref={tableRef}>
+                    <DataGrid
+                      rows={candidateList}
+                      columns={columns}
+                      loading={loading}
+                      getRowId={(row) => row.candidateNumber} // Adjust as per your API's unique identifier
+                      slots={{
+                        toolbar: MyCustomToolbar
+                      }}
+                      density="compact"
+                    />
+                  </div>
+                </Grid>
               </Grid>
-            </Grid>
+            )}
           </CardContent>
         </MainCard>
       )}

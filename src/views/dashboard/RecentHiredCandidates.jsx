@@ -28,10 +28,11 @@ function MyCustomToolbar(props) {
   );
 }
 
-export default function RecentHiredCandidates({ isLoading }) {
+export default function RecentHiredCandidates() {
   const [candidateList, setCandidateList] = useState([]);
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Ref for the table container to print only the table
   const tableRef = useRef();
@@ -71,6 +72,7 @@ export default function RecentHiredCandidates({ isLoading }) {
         console.error('Error fetching candidate details:', error);
       } finally {
         setLoading(false);
+        setIsLoading(false);
       }
     }
 
@@ -84,29 +86,37 @@ export default function RecentHiredCandidates({ isLoading }) {
       ) : (
         <MainCard content={false}>
           <CardContent>
-            <Grid item mb={1}>
-              <Typography variant="h4">Recently Hired</Typography>
-            </Grid>
+            {candidateList.length === 0 ? (
+              <Grid item xs={12}>
+                <Typography variant="h5" align="center">
+                  No Interviewee is hired recently.
+                </Typography>
+              </Grid>
+            ) : (
+              <Grid container spacing={2} style={{ backgroundColor: 'white' }}>
+                <Grid item mb={1}>
+                  <Typography variant="h4">Recently Hired</Typography>
+                </Grid>
 
-            <Grid container spacing={2} style={{ backgroundColor: 'white' }}>
-              <Grid item>
-                <Box id="filter-panel" />
+                <Grid item>
+                  <Box id="filter-panel" />
+                </Grid>
+                <Grid item style={{ width: '100%', overflow: 'auto' }}>
+                  <div ref={tableRef}>
+                    <DataGrid
+                      rows={candidateList}
+                      columns={columns}
+                      loading={loading}
+                      getRowId={(row) => row.candidateNumber}
+                      slots={{
+                        toolbar: MyCustomToolbar
+                      }}
+                      density="compact"
+                    />
+                  </div>
+                </Grid>
               </Grid>
-              <Grid item style={{ width: '100%', overflow: 'auto' }}>
-                <div ref={tableRef}>
-                  <DataGrid
-                    rows={candidateList}
-                    columns={columns}
-                    loading={loading}
-                    getRowId={(row) => row.candidateNumber}
-                    slots={{
-                      toolbar: MyCustomToolbar
-                    }}
-                    density="compact"
-                  />
-                </div>
-              </Grid>
-            </Grid>
+            )}
           </CardContent>
         </MainCard>
       )}

@@ -164,7 +164,7 @@ export default function EvaluationFormPage() {
         setShowExperienceForm(candidateResponse.data.data.haveExperiences);
 
         if (!data.haveExperiences) {
-          navigate('/pages/login/login3', { replace: true });
+          navigate('/candidates/thankyou', { replace: true });
         }
       } else {
         alert('Process failed! Please try again.');
@@ -218,7 +218,7 @@ export default function EvaluationFormPage() {
       setCandidateExperienceList([{ experienceField: '', organization: '', years: '' }]);
       setShowExperienceForm(false);
 
-      navigate('/pages/login/login3', { replace: true });
+      navigate('/candidates/thankyou', { replace: true });
     } catch (err) {
       console.error('Error:', err.message);
       alert('Process failed! Please try again later.');

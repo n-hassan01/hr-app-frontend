@@ -41,8 +41,8 @@ export default function QuickFilterOutsideOfGrid() {
             { field: 'candidateNumber', headerName: 'Candidate Number' },
             { field: 'interviewDate', headerName: 'Interview Date', flex: 1 },
             { field: 'fullName', headerName: 'Name', flex: 1 },
-            { field: 'status', headerName: 'Status', flex: 1 },
-            { field: 'nidNumber', headerName: 'NID', flex: 1 },
+            { field: 'status', headerName: 'Status' },
+            { field: 'nidNumber', headerName: 'NID' },
             { field: 'email', headerName: 'Email' },
             { field: 'contactNumber', headerName: 'Contact' },
             {
@@ -202,7 +202,6 @@ export default function QuickFilterOutsideOfGrid() {
   };
 
   const updateCandidateStatus = async (row, value) => {
-    console.log(row);
     if (!row || !row.candidateNumber) {
       console.error('Invalid row data. "candidateNumber" is required.');
       return;
@@ -213,13 +212,84 @@ export default function QuickFilterOutsideOfGrid() {
         candidateNumber: row.candidateNumber,
         status: value
       };
-      const response = await updateCandidateStatusService(requestBody, user.token);
-
-      const alertMessage = response.data?.statusCode === 200 ? `Successfully ${value}!` : 'Process failed! Try again';
-      alert(alertMessage);
+      await updateCandidateStatusService(requestBody, user.token);
     } catch (error) {
       console.error('Error fetching candidate details:', error);
       alert(`Error: ${error.message}`);
+    } finally {
+      const response = await getCandidatesService(); // API endpoint
+      if (response.data.statusCode === 200) {
+        const data = response.data.data;
+
+        const customColumns = [
+          { field: 'candidateNumber', headerName: 'Candidate Number' },
+          { field: 'interviewDate', headerName: 'Interview Date', flex: 1 },
+          { field: 'fullName', headerName: 'Name', flex: 1 },
+          { field: 'status', headerName: 'Status' },
+          { field: 'nidNumber', headerName: 'NID' },
+          { field: 'email', headerName: 'Email' },
+          { field: 'contactNumber', headerName: 'Contact' },
+          {
+            field: 'action',
+            headerName: 'Action',
+            flex: 1,
+            sortable: false,
+            renderCell: (params) => (
+              <div style={{ display: 'flex', gap: '5px', padding: '10px 0' }}>
+                <button
+                  onClick={() => updateCandidateStatus(params.row, 'HIRED')}
+                  style={{
+                    padding: '7px',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    background: params.row.status === 'HIRED' ? '#0d6efd' : '',
+                    // color: '#fff',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Hired
+                </button>
+                <button
+                  onClick={() => updateCandidateStatus(params.row, 'REJECTED')}
+                  style={{
+                    padding: '7px',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    background: params.row.status === 'REJECTED' ? '#dc3545' : '',
+                    // color: '#fff',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Rejected
+                </button>
+                <button
+                  onClick={() => handlePrint(params.row)}
+                  style={{
+                    padding: '7px',
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    // background: '#673ab7',
+                    // color: 'black',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Print
+                </button>
+              </div>
+            )
+          }
+        ];
+
+        const filteredData = data.map((row) =>
+          customColumns.reduce((acc, col) => {
+            acc[col.field] = row[col.field];
+            return acc;
+          }, {})
+        );
+
+        setColumns(customColumns);
+        setCandidateList(filteredData);
+      }
     }
   };
 

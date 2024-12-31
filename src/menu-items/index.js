@@ -1,4 +1,4 @@
-// import dashboard from './dashboard';
+import dashboard from './dashboard';
 // import pages from './pages';
 import OtherMenu from './other'; // Import the updated OtherMenu function
 // import utilities from './utilities';
@@ -6,7 +6,7 @@ import OtherMenu from './other'; // Import the updated OtherMenu function
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-    items: [OtherMenu()] // Call OtherMenu to get the dynamically generated menu group
+  items: [dashboard, OtherMenu()] // Call OtherMenu to get the dynamically generated menu group
 };
 
 export default menuItems;

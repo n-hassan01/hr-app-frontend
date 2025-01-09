@@ -6,6 +6,26 @@
   width: 50%;
 }
 
+.half-max-width {
+  max-width: 50%;
+}
+
 .full-width {
   width: 100%;
+}
+
+.center-margin {
+  margin: 0 auto;
+}
+
+.padding-bottom-1rem {
+  padding-bottom: 1rem;
+}
+
+.margin-bottom-1rem {
+  margin-bottom: 1rem;
+}
+
+.form-max-width {
+  max-width: 40rem;
 }

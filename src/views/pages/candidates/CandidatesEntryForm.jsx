@@ -6,12 +6,18 @@ import Form from '../../utilities/Form';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+// components
+import AuthFooter from 'ui-component/cards/AuthFooter';
+
 // api services
 import {
   addCandidateExperienceInfoService,
   addCandidateFacilitiesInfoService,
   addCandidateInfoService
 } from '../../../services/ApiServices';
+
+// styles
+import '../../../styles/utils.css';
 
 export default function EvaluationFormPage() {
   const navigate = useNavigate();
@@ -22,16 +28,9 @@ export default function EvaluationFormPage() {
   const [candidateExperienceList, setCandidateExperienceList] = useState([{ experienceField: '', organization: '', years: '' }]);
 
   const fields = [
-    {
-      label: 'Candidate Number',
-      name: 'candidateNumber',
-      type: 'text',
-      readOnly: true
-    },
-    { label: 'Interview Date', name: 'interviewDate', type: 'date' },
-
-    { label: 'Full name', name: 'fullName', type: 'text' },
-    { label: 'NID/BIRTH REGISTRATION', name: 'nidNumber', type: 'text' },
+    { label: 'Interview Date*', name: 'interviewDate', type: 'date' },
+    { label: 'Full name*', name: 'fullName', type: 'text' },
+    { label: 'NID/BIRTH REGISTRATION*', name: 'nidNumber', type: 'text' },
     { label: 'Age', name: 'age', type: 'text' },
 
     { label: 'Email address', name: 'email', type: 'text', placeholder: 'example@gmail.com' },
@@ -94,6 +93,12 @@ export default function EvaluationFormPage() {
 
   const handleSubmit = async (data) => {
     try {
+      if (!data.nidNumber || !data.interviewDate || !data.fullName) {
+        alert('Interview date, Your name and Your NID are required!');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
       // Format interviewDate to support LocalDateTime object if it exists
       const formattedDate = data.interviewDate ? new Date(data.interviewDate).toISOString() : null;
 
@@ -159,7 +164,6 @@ export default function EvaluationFormPage() {
         };
         await addCandidateFacilitiesInfoService(facilitiesRequestBody);
 
-        alert('Thank you for submitting your information!');
         setCandidate(candidateResponse.data.data);
         setShowExperienceForm(candidateResponse.data.data.haveExperiences);
 
@@ -266,7 +270,7 @@ export default function EvaluationFormPage() {
 
   return (
     <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#eef2f6' }}>
-      <div hidden={showExperienceForm}>
+      <div hidden={showExperienceForm} className="form-max-width center-margin">
         <h2>
           {' '}
           <span style={{ color: 'crimson' }}>Welcome!</span> Please enter your information{' '}
@@ -274,7 +278,7 @@ export default function EvaluationFormPage() {
         <Form
           fields={fields}
           initialValues={formData}
-          rowsConfig={[2, 3, 2, 2, 5, 3, 3, 5, 5, 5, 5, 5]}
+          // rowsConfig={[4, 2, 2, 5, 3, 3, 5, 5, 5, 5, 5]}
           onSubmit={handleSubmit}
           resetAfterSubmit={true}
         />
@@ -283,7 +287,7 @@ export default function EvaluationFormPage() {
       <div hidden={!showExperienceForm}>
         <h2>Please enter your experiences information</h2>
 
-        <button style={responsiveStyles.input} onClick={handleAddRow}>
+        <button style={responsiveStyles.input} onClick={handleAddRow} className="margin-bottom-1rem">
           <FontAwesomeIcon icon={faPlus} /> Add more
         </button>
 
@@ -323,6 +327,8 @@ export default function EvaluationFormPage() {
           Submit
         </button>
       </div>
+
+      <AuthFooter />
     </div>
   );
 }

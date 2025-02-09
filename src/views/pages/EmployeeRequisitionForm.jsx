@@ -81,8 +81,6 @@ export default function EmployeeRequisitionFormPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        console.log(user);
-
         const reponse = await getUserByUsernameService(user.username);
 
         if (reponse.data.statusCode === 200) {
@@ -95,7 +93,6 @@ export default function EmployeeRequisitionFormPage() {
 
     fetchData();
   }, []);
-  console.log(username);
 
   useEffect(() => {
     async function fetchData() {
@@ -113,11 +110,8 @@ export default function EmployeeRequisitionFormPage() {
 
     fetchData();
   }, []);
-  console.log(users);
 
   const handleFormSubmit = async (data) => {
-    console.log('Submitting Data:', data);
-
     try {
       // Constructing the request body as per your required format
       const employeeRequisitionFormRequestBody = {
@@ -147,15 +141,11 @@ export default function EmployeeRequisitionFormPage() {
           id: username // Assuming `user.id` is available
         }
       };
-      console.log('Before Approval Request:', employeeRequisitionFormRequestBody);
       // Sending the request
       const manpowerRequisitionResponse = await addManpowerRequisitionFromInfoService(employeeRequisitionFormRequestBody, user.token);
 
-      console.log('Response Received:', manpowerRequisitionResponse);
-
       // Extracting the ID from the response
       const requisitionId = manpowerRequisitionResponse?.data?.data?.id;
-      console.log('Extracted Requisition ID:', requisitionId);
 
       if (requisitionId) {
         const approvalRequestBody = {
@@ -165,38 +155,33 @@ export default function EmployeeRequisitionFormPage() {
           },
           status: 'PENDING' // Assuming initial status
         };
-
-        console.log('Sending Approval Request:', approvalRequestBody);
-
         // Sending the second request
         const approvalResponse = await sendApprovalRequestInfoService(approvalRequestBody, user.token);
 
         if (approvalResponse.data.statusCode === 200) {
+          alert('Data Saved Successfully');
           setAlertMessage('Data Saved Successfully');
           setAlertSeverity('success');
           setShouldResetForm(true); // Reset the form after success
-
           // Reset form values only after successful submission
           setFormValues({}); // Empty out the form fields
-
           setTimeout(() => {
             setAlertMessage('');
           }, 3000); // Alert message disappears after 3 seconds
         } else {
+          alert('Process failed! Try again');
           setAlertMessage('Process failed! Try again');
           setAlertSeverity('error');
           setShouldResetForm(false);
-
           setTimeout(() => {
             setAlertMessage('');
           }, 3000); // Alert message disappears after 3 seconds
         }
-        console.log('Approval Response:', approvalResponse);
       }
 
       // You can use requisitionId for further logic here (e.g., navigation, storing in state)
     } catch (error) {
-      console.error('Submission Error:', error);
+      alert('Process failed! Try again');
       setAlertMessage('Process failed! Please try again...');
       setAlertSeverity('error');
       setShouldResetForm(false);

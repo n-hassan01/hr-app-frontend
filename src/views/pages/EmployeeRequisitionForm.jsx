@@ -1,12 +1,8 @@
 /* eslint-disable no-unused-vars */
 import Alert from '@mui/material/Alert';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { getUserData } from '../../context/UserContext';
 import Form from '../utilities/Form';
-
-// components
-import AuthFooter from 'ui-component/cards/AuthFooter';
 
 // api services
 import {
@@ -20,26 +16,23 @@ import {
 import '../../styles/utils.css';
 
 export default function EmployeeRequisitionFormPage() {
-  const navigate = useNavigate();
   const user = getUserData();
   const [formData, setFormData] = useState({});
-  const [users, setUsers] = useState({});
-  const [username, setUsername] = useState({});
-  const [showExperienceForm, setShowExperienceForm] = useState(false);
-  const [candidateExperienceList, setCandidateExperienceList] = useState([{ experienceField: '', organization: '', years: '' }]);
-  const [selectedUser, setSelectedUser] = useState(null); // Track selected user
+  const [approvers, setApprovers] = useState([]);
+  const [requester, setRequester] = useState(null);
   const [shouldResetForm, setShouldResetForm] = useState(true);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState('success');
 
   const fields = [
-    { label: 'Required Position', name: 'requiredPosition', type: 'text' },
-    { label: 'Number of Employee', name: 'numberOfEmployee', type: 'number' },
-    { label: 'Department', name: 'department', type: 'text' },
+    { label: 'Required Position*', name: 'requiredPosition', type: 'text' },
+    { label: 'Number of Employee*', name: 'numberOfEmployee', type: 'number' },
+    { label: 'Department*', name: 'department', type: 'text' },
+    { label: 'Location', name: 'location', type: 'text' },
     { label: 'Section', name: 'section', type: 'text' },
     { label: 'Sub Section', name: 'subSection', type: 'text' },
     { label: 'Expected Joining Date', name: 'expectedJoiningDate', type: 'date' },
-
+    { label: 'Replacement of Mr./Ms.', name: 'replacementOfMrMs', type: 'text' },
     {
       label: 'Reason for Request',
       name: 'reasonForRequest',
@@ -57,16 +50,14 @@ export default function EmployeeRequisitionFormPage() {
       label: 'Budgeted',
       name: 'budgeted',
       type: 'checkbox',
-      className: 'flex items-center gap-4', // Ensures inline layout
+      className: 'flex items-center gap-4',
       options: [
         { label: 'Yes', value: 'true' },
         { label: 'No', value: 'false' }
       ]
     },
-
-    { label: 'Replacement of Mr./Ms.', name: 'replacementOfMrMs', type: 'text' },
-    { label: 'Main Function', name: 'mainFunction', type: 'text' },
-    { label: 'Role & Responsibilities', name: 'roleResponsibilities', type: 'textarea' },
+    { label: 'Main Function', name: 'mainFunction', type: 'textarea' },
+    { label: 'Role & Responsibilities*', name: 'roleResponsibilities', type: 'textarea' },
     { label: 'Minimum Experience', name: 'minimumExperience', type: 'number' },
     { label: 'Reports to', name: 'reportsTo', type: 'text' },
     { label: 'Minimum Education', name: 'minimumEducation', type: 'text' },
@@ -84,7 +75,7 @@ export default function EmployeeRequisitionFormPage() {
         const reponse = await getUserByUsernameService(user.username);
 
         if (reponse.data.statusCode === 200) {
-          setUsername(reponse.data.data.id);
+          setRequester(reponse.data.data.id);
         }
       } catch (error) {
         console.error('Error fetching account details:', error);
@@ -98,10 +89,9 @@ export default function EmployeeRequisitionFormPage() {
     async function fetchData() {
       try {
         const reponse = await getUsersBySpecificRoleService('MANPOWER REQUISITION APPROVER');
-        console.log(reponse.data.data);
 
         if (reponse.data.statusCode === 200) {
-          setUsers(reponse.data.data);
+          setApprovers(reponse.data.data);
         }
       } catch (error) {
         console.error('Error fetching account details:', error);
@@ -113,20 +103,29 @@ export default function EmployeeRequisitionFormPage() {
 
   const handleFormSubmit = async (data) => {
     try {
-      // Constructing the request body as per your required format
+      if (!requester) {
+        alert('Process failed! Try again');
+        return;
+      }
+
+      if (data.requiredPosition || data.department || data.roleResponsibilities) {
+        alert('Please enter the required fields!');
+        return;
+      }
+
       const employeeRequisitionFormRequestBody = {
         location: data.location ?? '',
-        requiredPosition: data.requiredPosition ?? '',
-        numberOfEmployee: data.numberOfEmployee ?? '',
-        department: data.department ?? '',
+        requiredPosition: data.requiredPosition,
+        numberOfEmployee: data.numberOfEmployee ?? 1,
+        department: data.department,
         section: data.section ?? '',
         subSection: data.subSection ?? '',
         reasonForRequest: data.reasonForRequest[0] ?? '',
-        isBudgeted: data.budgeted[0] ?? '', // Convert to boolean
+        isBudgeted: data.budgeted[0] ?? false,
         replacementOf: data.replacementOfMrMs ?? '',
         mainFunction: data.mainFunction ?? '',
         expectedJoiningDate: data.expectedJoiningDate ? new Date(data.expectedJoiningDate).toISOString() : '',
-        roleAndResponsibilities: data.roleResponsibilities ?? '',
+        roleAndResponsibilities: data.roleResponsibilities,
         minimumExperience: data.minimumExperience ?? '',
         reportsTo: data.reportsTo ?? '',
         minimumEducation: data.minimumEducation ?? '',
@@ -136,15 +135,13 @@ export default function EmployeeRequisitionFormPage() {
         competencyRequirements: data.competencyRequirements ?? '',
         computerOperationKnowledge: data.computerOperationKnowledge ?? '',
         additionalSkills: data.additionalSkills ?? '',
-        creationDate: new Date().toISOString(), // Current timestamp
+        creationDate: new Date().toISOString(),
         createdBy: {
-          id: username // Assuming `user.id` is available
+          id: requester
         }
       };
-      // Sending the request
       const manpowerRequisitionResponse = await addManpowerRequisitionFromInfoService(employeeRequisitionFormRequestBody, user.token);
 
-      // Extracting the ID from the response
       const requisitionId = manpowerRequisitionResponse?.data?.data?.id;
 
       if (requisitionId) {
@@ -153,9 +150,8 @@ export default function EmployeeRequisitionFormPage() {
             approvalOfId: requisitionId,
             approvedById: data.selectedUser
           },
-          status: 'PENDING' // Assuming initial status
+          status: 'PENDING'
         };
-        // Sending the second request
         const approvalResponse = await sendApprovalRequestInfoService(approvalRequestBody, user.token);
 
         if (approvalResponse.data.statusCode === 200) {
@@ -178,8 +174,6 @@ export default function EmployeeRequisitionFormPage() {
           }, 3000); // Alert message disappears after 3 seconds
         }
       }
-
-      // You can use requisitionId for further logic here (e.g., navigation, storing in state)
     } catch (error) {
       alert('Process failed! Try again');
       setAlertMessage('Process failed! Please try again...');
@@ -191,45 +185,6 @@ export default function EmployeeRequisitionFormPage() {
     }
   };
 
-  const responsiveStyles = {
-    form: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '20px',
-      width: '100%',
-      maxWidth: '100%',
-      margin: '0 auto',
-      padding: '20px',
-      backgroundColor: '#fff',
-      boxSizing: 'border-box',
-      borderRadius: '8px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-    },
-    row: { display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%' },
-    field: {
-      flex: '1 1 calc(20% - 12px)',
-      minWidth: '200px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
-      boxSizing: 'border-box'
-    },
-    label: { fontWeight: 'bold', fontSize: '14px', textAlign: 'left' },
-    input: { padding: '10px', width: '100%', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' },
-    button: {
-      padding: '15px',
-      marginTop: '15px',
-      width: '100%',
-      backgroundColor: '#5b2c6f',
-      color: 'white',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      textAlign: 'center'
-    }
-  };
-
   return (
     <div style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#eef2f6' }}>
       {alertMessage && (
@@ -237,24 +192,22 @@ export default function EmployeeRequisitionFormPage() {
           {alertMessage}
         </Alert>
       )}
-      <div hidden={showExperienceForm} className="form-max-width center-margin">
-        <h2>
+      <div className="form-max-width center-margin">
+        {/* <h2>
           REMARK HB LIMITED <br /> <br />
           EMPLOYEE REQUISITION FORM
-        </h2>
+        </h2> */}
 
         <Form
           fields={fields}
           initialValues={formData}
           onSubmit={handleFormSubmit}
-          userList={users}
-          rowsConfig={[2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1]}
+          userList={approvers}
+          rowsConfig={[2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 1, 1, 1]}
           actionType="sendToApproval"
           resetAfterSubmit={shouldResetForm}
         />
       </div>
-
-      <AuthFooter />
     </div>
   );
 }

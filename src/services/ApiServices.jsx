@@ -24,6 +24,16 @@ export const getRoleByTitleService = async (title) => {
   }
 };
 
+export const getAllUsersService = async () => {
+  try {
+    return await axios.get(`${usersUrl}api/users/all`);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.response;
+  }
+};
+
 export const getUserByUsernameService = async (username) => {
   try {
     return await axios.get(`${usersUrl}api/users/byUsername/${username}`);
@@ -250,6 +260,48 @@ export const getCandidatesByStatusService = async (status, upperLimit, lowerLimi
 export const getUsersBySpecificRoleService = async (status) => {
   try {
     return await axios.get(`${usersUrl}api/users/byRole/${status}`);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.response;
+  }
+};
+
+export const getAllManpowerRequisitionService = async (loginToken) => {
+  try {
+    return await axios.get(`${usersUrl}api/jwt/manpowerRequisition/all`, {
+      headers: {
+        Authorization: `Bearer ${loginToken}`
+      }
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    return err.response;
+  }
+};
+
+export const getManpowerRequisitionsService = async (loginToken, status) => {
+  try {
+    return await axios.get(`${usersUrl}api/jwt/manpowerRequisition/byStatus/${status}`, {
+      headers: {
+        Authorization: `Bearer ${loginToken}`
+      }
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    return err.response;
+  }
+};
+
+export const getManpowerRequisitionByApproverService = async (loginToken, bodyInfo, status) => {
+  try {
+    return await axios.post(`${usersUrl}api/jwt/manpowerRequisitionApproval/get/byApprover/${status}`, bodyInfo, {
+      headers: {
+        Authorization: `Bearer ${loginToken}`
+      }
+    });
   } catch (err) {
     console.log(err.message);
 

@@ -28,6 +28,7 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
 
   const [isModalOpen, setIsModalOpen] = useState(false); // State for managing modal visibility
   const [isModalOpenForApproval, setIsModalOpenForApproval] = useState(false);
+  const [isModalOpenForReject, setIsModalOpenForReject] = useState(false);
   const [selectedUser, setSelectedUser] = useState(''); // State for selected user in the dropdown
   const [isApproved, setIsApproved] = useState(false);
   const [remarks, setRemarks] = useState({});
@@ -59,9 +60,16 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
     setIsModalOpen(true);
   };
 
-  const handleApprovalFormSubmit = (e) => {
+  const handleApprovalFormSubmit = (e, action) => {
     e.preventDefault();
-    setIsModalOpenForApproval(true);
+    console.log('Button clicked:', action);
+    // setIsModalOpenForApproval(true);
+
+    if (action === 'send') {
+      setIsModalOpenForApproval(true);
+    } else if (action === 'cancel') {
+      setIsModalOpenForReject(true);
+    }
   };
 
   const handleApprovalFormSubmitFinish = (e) => {
@@ -87,6 +95,35 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
       }
     } catch (error) {
       // alert('Process failed! Please try again...');
+      setAlertSeverity('error');
+      setTimeout(() => {
+        setAlertMessage('');
+      }, 3000);
+    }
+  };
+
+  const handleApprovalFormSubmitReject = (e) => {
+    e.preventDefault();
+
+    // Ensure we are correctly setting isApproved to 'Reject'
+    const updatedFormValues = {
+      ...formValues, // Preserve existing form values
+      selectedUser: selectedUser, // Ensure selectedUser is passed
+      isApproved: 'Reject', // Explicitly set isApproved
+      remarks: remarks || '' // Ensure remarks is defined to avoid issues
+    };
+
+    console.log('Updated Form Values Before Submit:', updatedFormValues); // Debugging check
+
+    try {
+      onSubmit(updatedFormValues); // Submit the updated form data
+
+      // Reset form if required
+      if (resetAfterSubmit) {
+        setFormValues(initializeFormValues());
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
       setAlertSeverity('error');
       setTimeout(() => {
         setAlertMessage('');
@@ -353,9 +390,14 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
             Send to Approval
           </button>
         ) : actionType === 'Approved' ? (
-          <button style={responsiveStyles.button} onClick={handleApprovalFormSubmit}>
-            Send
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button style={responsiveStyles.button} onClick={(e) => handleApprovalFormSubmit(e, 'send')}>
+              Send
+            </button>
+            <button style={responsiveStyles.button} onClick={(e) => handleApprovalFormSubmit(e, 'cancel')}>
+              Finish
+            </button>
+          </div>
         ) : (
           <button style={responsiveStyles.button} onClick={handleSubmit}>
             Submit
@@ -528,6 +570,73 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
                 fontWeight: 'bold'
               }}
               onClick={handleApprovalFormSubmitFinish}
+            >
+              Submit
+            </button>
+          </div>
+        </>
+      )}
+
+      {isModalOpenForReject && (
+        <>
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              zIndex: 999
+            }}
+            onClick={() => setIsModalOpenForReject(false)}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '50%',
+              height: '50%', // Fixed height
+              backgroundColor: '#fff',
+              padding: '20px',
+              boxSizing: 'border-box',
+              zIndex: 1000,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            {/* Remarks Field */}
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '10px', width: '50%' }}>
+              <label>Remarks</label>
+              <input
+                type="text"
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px'
+                }}
+                onChange={(e) => setRemarks(e.target.value)}
+              />
+            </div>
+
+            {/* Submit Button */}
+            <button
+              style={{
+                marginTop: '10px',
+                padding: '10px',
+                backgroundColor: '#5b2c6f',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+              onClick={handleApprovalFormSubmitReject}
             >
               Submit
             </button>

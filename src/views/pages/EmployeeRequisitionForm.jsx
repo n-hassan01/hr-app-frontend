@@ -233,6 +233,8 @@ export default function EmployeeRequisitionFormPage({ formData: initialFormData,
     console.log(data);
 
     if (data.isApproved === 'no') {
+      console.log('no');
+
       try {
         const manpowerApprovalRequisitionRequestBody = {
           manpowerRequisitionApprovalUniqueKey: {
@@ -289,7 +291,65 @@ export default function EmployeeRequisitionFormPage({ formData: initialFormData,
           setAlertMessage('');
         }, 1000);
       }
+    } else if (data.isApproved === 'Reject') {
+      console.log('false');
+      try {
+        const manpowerApprovalRequisitionRequestBody = {
+          manpowerRequisitionApprovalUniqueKey: {
+            approvalOfId: Number(data.id), // Ensuring it's a Number
+            approvedById: Number(requester) // Ensuring it's a Number
+          },
+          remarks: String(data.remarks), // Ensuring it's a String
+          status: String('REJECTED') // Ensuring it's a String
+        };
+
+        const manpowerApprovalRequisitionResponse = await manpowerRequisitionApprovalUpdateService(
+          manpowerApprovalRequisitionRequestBody,
+          user.token
+        );
+
+        // const requisitionId = manpowerApprovalRequisitionResponse?.data?.data?.id;
+
+        if (manpowerApprovalRequisitionResponse.data.statusCode === 200) {
+          const approvalRequestBody = {
+            id: Number(data.id), // Ensuring it's a Number
+            remarks: String(data.remarks), // Ensuring it's a String
+            status: String('REJECTED') // Ensuring it's a String
+          };
+
+          const approvalResponse = await manpowerRequisitionUpdateService(approvalRequestBody, user.token);
+
+          if (approvalResponse.data.statusCode === 200) {
+            alert('Data Saved Successfully');
+            setAlertMessage('Data Saved Successfully');
+            setAlertSeverity('success');
+            setShouldResetForm(true); // Reset the form after success
+            // Reset form values only after successful submission
+            setFormValues({}); // Empty out the form fields
+            setTimeout(() => {
+              setAlertMessage('');
+            }, 3000); // Alert message disappears after 3 seconds
+          } else {
+            alert('Process failed! Try again');
+            setAlertMessage('Process failed! Try again');
+            setAlertSeverity('error');
+            setShouldResetForm(false);
+            setTimeout(() => {
+              setAlertMessage('');
+            }, 3000); // Alert message disappears after 3 seconds
+          }
+        }
+      } catch (error) {
+        // alert('Process failed! Try again');
+        setAlertMessage('Process failed! Please try again...');
+        setAlertSeverity('error');
+        setShouldResetForm(false);
+        setTimeout(() => {
+          setAlertMessage('');
+        }, 1000);
+      }
     } else {
+      console.log('yes');
       try {
         const manpowerApprovalRequisitionRequestBody = {
           manpowerRequisitionApprovalUniqueKey: {

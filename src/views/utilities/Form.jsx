@@ -62,8 +62,6 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
 
   const handleApprovalFormSubmit = (e, action) => {
     e.preventDefault();
-    console.log('Button clicked:', action);
-    // setIsModalOpenForApproval(true);
 
     if (action === 'send') {
       setIsModalOpenForApproval(true);
@@ -74,7 +72,6 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
 
   const handleApprovalFormSubmitFinish = (e) => {
     e.preventDefault();
-    console.log(formValues);
     const updatedFormValues = {
       ...formValues,
       selectedUser: selectedUser,
@@ -85,8 +82,6 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
       // isFinished: isFinished, // Add approvedBy fields to formValues
     };
 
-    // Now, you can handle the submission of the form, which includes the values of the "Approved By" fields
-    console.log(updatedFormValues); // Submit the updated form data
     try {
       onSubmit(updatedFormValues);
       // setIsModalOpenForApproval(false);
@@ -113,8 +108,6 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
       remarks: remarks || '' // Ensure remarks is defined to avoid issues
     };
 
-    console.log('Updated Form Values Before Submit:', updatedFormValues); // Debugging check
-
     try {
       onSubmit(updatedFormValues); // Submit the updated form data
 
@@ -133,7 +126,6 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
 
   const handleFinish = async (e) => {
     e.preventDefault();
-    console.log(formValues);
 
     const formDataWithUser = {
       ...formValues,

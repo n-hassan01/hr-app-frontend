@@ -163,14 +163,12 @@ export default function EmployeeRequisitionFormPage({ formData: initialFormData,
           id: requester
         }
       };
-      console.log(employeeRequisitionFormRequestBody);
 
       // Declare the response variable outside so it's accessible later
       let manpowerRequisitionResponse;
 
       try {
         manpowerRequisitionResponse = await addManpowerRequisitionFromInfoService(employeeRequisitionFormRequestBody, user.token);
-        console.log('Response from API:', manpowerRequisitionResponse);
 
         if (!manpowerRequisitionResponse || !manpowerRequisitionResponse.data || manpowerRequisitionResponse.data.statusCode !== 200) {
           throw new Error('API request failed or returned an error.');
@@ -181,7 +179,6 @@ export default function EmployeeRequisitionFormPage({ formData: initialFormData,
       }
 
       const requisitionId = manpowerRequisitionResponse?.data?.data?.id;
-      console.log('Requisition ID:', requisitionId);
 
       if (requisitionId) {
         const approvalRequestBody = {
@@ -230,11 +227,7 @@ export default function EmployeeRequisitionFormPage({ formData: initialFormData,
   };
 
   const handleApprovalFormSubmit = async (data) => {
-    console.log(data);
-
     if (data.isApproved === 'no') {
-      console.log('no');
-
       try {
         const manpowerApprovalRequisitionRequestBody = {
           manpowerRequisitionApprovalUniqueKey: {
@@ -292,7 +285,6 @@ export default function EmployeeRequisitionFormPage({ formData: initialFormData,
         }, 1000);
       }
     } else if (data.isApproved === 'Reject') {
-      console.log('false');
       try {
         const manpowerApprovalRequisitionRequestBody = {
           manpowerRequisitionApprovalUniqueKey: {
@@ -349,7 +341,6 @@ export default function EmployeeRequisitionFormPage({ formData: initialFormData,
         }, 1000);
       }
     } else {
-      console.log('yes');
       try {
         const manpowerApprovalRequisitionRequestBody = {
           manpowerRequisitionApprovalUniqueKey: {

@@ -70,7 +70,7 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
       ...formValues,
       selectedUser: selectedUser,
       isApproved: isApproved,
-      ...(isApproved !== 'no' && { finish: true }), // Add "finish: true" only if isApproved is NOT "no"
+      ...(isApproved !== 'no' && { finish: true }),
       remarks: remarks
     };
     try {

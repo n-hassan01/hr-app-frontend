@@ -28,61 +28,62 @@ export default function EvaluationFormPage() {
   const [candidateExperienceList, setCandidateExperienceList] = useState([{ experienceField: '', organization: '', years: '' }]);
 
   const fields = [
-    { label: 'Interview Date*', name: 'interviewDate', type: 'date' },
-    { label: 'Full name*', name: 'fullName', type: 'text' },
+    { label: 'INTERVIEW DATE*', name: 'interviewDate', type: 'date' },
+    { label: 'FULL NAME*', name: 'fullName', type: 'text' },
     { label: 'NID/BIRTH REGISTRATION*', name: 'nidNumber', type: 'text' },
-    { label: 'Age', name: 'age', type: 'text' },
+    { label: 'AGE', name: 'age', type: 'text' },
 
-    { label: 'Email address', name: 'email', type: 'text', placeholder: 'example@gmail.com' },
-    { label: 'Contact number', name: 'contactNumber', type: 'text' },
+    { label: 'EMAIL ADDRESS', name: 'email', type: 'text', placeholder: 'example@gmail.com' },
+    { label: 'CONTACT NUMBER', name: 'contactNumber', type: 'text' },
 
-    { label: 'Present address', name: 'presentAddress', type: 'text' },
-    { label: 'Permanent address', name: 'permanentAddress', type: 'text' },
+    { label: 'PRESENT ADDRESS', name: 'presentAddress', type: 'text' },
+    { label: 'PERMANENT ADDRESS', name: 'permanentAddress', type: 'text' },
 
-    { label: 'Last education exam', name: 'lastEducationExam', type: 'text' },
-    { label: 'Last education subject', name: 'lastEducationSubject', type: 'text' },
-    { label: 'Last education institute', name: 'lastEducationInstitute', type: 'text' },
-    { label: 'Last education year', name: 'lastEducationYear', type: 'text' },
-    { label: 'Last education result', name: 'lastEducationResult', type: 'text' },
+    { label: 'LAST EDUCATION EXAM', name: 'lastEducationExam', type: 'text' },
+    { label: 'LAST EDUCATION SUBJECT', name: 'lastEducationSubject', type: 'text' },
+    { label: 'LAST EDUCATION INSTITUTE', name: 'lastEducationInstitute', type: 'text' },
+    { label: 'LAST EDUCATION YEAR', name: 'lastEducationYear', type: 'text' },
+    { label: 'LAST EDUCATION RESULT', name: 'lastEducationResult', type: 'text' },
 
-    { label: 'Father name', name: 'fatherName', type: 'text' },
-    { label: 'Mother name', name: 'motherName', type: 'text' },
-    { label: 'Number of siblings', name: 'numberOfSiblings', type: 'number' },
+    { label: 'FATHER NAME', name: 'fatherName', type: 'text' },
+    { label: 'MOTHER NAME', name: 'motherName', type: 'text' },
+    // { label: 'NUMBER of SIBLINGS', name: 'numberOfSiblings', type: 'number' },
 
     // { label: 'Have reference', name: 'haveReference', type: 'checkbox' },
-    { label: 'Reference name', name: 'ReferenceName', type: 'text' },
-    { label: 'Reference relation', name: 'referenceRelation', type: 'text' },
-    { label: 'Reference designation', name: 'referenceDesignation', type: 'text' },
+    // { label: 'Reference name', name: 'ReferenceName', type: 'text' },
+    // { label: 'Reference relation', name: 'referenceRelation', type: 'text' },
+    // { label: 'Reference designation', name: 'referenceDesignation', type: 'text' },
 
-    { label: 'Company', name: 'company', type: 'text', placeholder: 'enter your current company' },
-    { label: 'SBU', name: 'sbu', type: 'text', placeholder: 'enter your current sbu' },
-    { label: 'Department', name: 'department', type: 'text', placeholder: 'enter your current department' },
-    { label: 'Reports to', name: 'reportsTo', type: 'text', placeholder: 'enter your current reports to' },
-    { label: 'Designation', name: 'designation', type: 'text', placeholder: 'enter your current designation' },
+    { label: 'COMPANY', name: 'company', type: 'text', placeholder: 'enter your current company' },
+    // { label: 'SBU', name: 'sbu', type: 'text', placeholder: 'enter your current sbu' },
+    { label: 'DEPARTMENT', name: 'department', type: 'text', placeholder: 'enter your current department' },
+    // { label: 'Reports to', name: 'reportsTo', type: 'text', placeholder: 'enter your current reports to' },
+    // { label: 'Designation', name: 'designation', type: 'text', placeholder: 'enter your current designation' },
 
-    { label: 'Salary', name: 'salary', type: 'text', placeholder: 'enter your current salary' },
-    { label: 'Bonus', name: 'bonus', type: 'text', placeholder: 'enter your current bonus' },
-    { label: 'TA/Conveyance', name: 'taOrConveyance', type: 'text', placeholder: 'enter your current TA' },
-    { label: 'DA/food', name: 'daOrFood', type: 'text', placeholder: 'enter your current DA' },
-    { label: 'Benefit/Allowance', name: 'benefitOrAllowance', type: 'text', placeholder: 'enter your current allowance' },
+    { label: 'GROSS SALARY', name: 'salary', type: 'text', placeholder: 'enter your current salary' },
+    { label: 'BONUS', name: 'bonus', type: 'text', placeholder: 'enter your current bonus' },
+    { label: 'TA/CONVEYANCE', name: 'taOrConveyance', type: 'text', placeholder: 'enter your current TA' },
+    { label: 'DA/FOOD', name: 'daOrFood', type: 'text', placeholder: 'enter your current DA' },
+    { label: 'MEDICAL/LIFE INSURANCE', name: 'benefitOrAllowance', type: 'text', placeholder: 'enter your current allowance' },
+    // { label: 'BENEFIT/ALLOWANCE', name: 'benefitOrAllowance', type: 'text', placeholder: 'enter your current allowance' },
 
-    { label: 'PF/Gratuity', name: 'pfOrGratuity', type: 'text', placeholder: 'enter your current PF or Gratuity' },
-    { label: 'Transport facility', name: 'transportFacility', type: 'text', placeholder: 'enter your current transport facility' },
-    { label: 'Incentive/KPI', name: 'incentiveOrKpi', type: 'text', placeholder: 'enter your current incentive' },
-    { label: 'Mobile ceiling', name: 'mobileCeiling', type: 'text', placeholder: 'enter your current mobile ceiling' },
-    { label: 'Total CTC', name: 'totalCtc', type: 'text', placeholder: 'enter your current total ctc' },
+    { label: 'PF/GRATUITY', name: 'pfOrGratuity', type: 'text', placeholder: 'enter your current PF or Gratuity' },
+    { label: 'TRANSPORT FACILITY', name: 'transportFacility', type: 'text', placeholder: 'enter your current transport facility' },
+    // { label: 'Incentive/KPI', name: 'incentiveOrKpi', type: 'text', placeholder: 'enter your current incentive' },
+    { label: 'MOBILE CEILING', name: 'mobileCeiling', type: 'text', placeholder: 'enter your current mobile ceiling' }
+    // { label: 'Total CTC', name: 'totalCtc', type: 'text', placeholder: 'enter your current total ctc' },
 
-    { label: 'Interested to join', name: 'interestedToJoin', type: 'checkbox' },
-    { label: 'bond 2 Years', name: 'bond2Years', type: 'checkbox' },
-    { label: 'Bond 5 years', name: 'bond5Years', type: 'checkbox' },
-    { label: 'Have passport', name: 'havePassport', type: 'checkbox' },
-    { label: 'Have driving license', name: 'haveDrivingLicense', type: 'checkbox' },
+    // { label: 'Interested to join', name: 'interestedToJoin', type: 'checkbox' },
+    // { label: 'bond 2 Years', name: 'bond2Years', type: 'checkbox' },
+    // { label: 'Bond 5 years', name: 'bond5Years', type: 'checkbox' },
+    // { label: 'Have passport', name: 'havePassport', type: 'checkbox' },
+    // { label: 'Have driving license', name: 'haveDrivingLicense', type: 'checkbox' },
 
-    { label: 'Work anywhere in BD', name: 'workAnywhereInBd', type: 'checkbox' },
-    { label: 'Work at factory', name: 'workAtFactory', type: 'checkbox' },
-    { label: 'Operate computer', name: 'operateComp', type: 'checkbox' },
-    { label: 'Agreed terms', name: 'agreedTerms', type: 'checkbox' },
-    { label: 'Have experiences', name: 'haveExperiences', type: 'checkbox' }
+    // { label: 'Work anywhere in BD', name: 'workAnywhereInBd', type: 'checkbox' },
+    // { label: 'Work at factory', name: 'workAtFactory', type: 'checkbox' },
+    // { label: 'Operate computer', name: 'operateComp', type: 'checkbox' },
+    // { label: 'Agreed terms', name: 'agreedTerms', type: 'checkbox' },
+    // { label: 'Have experiences', name: 'haveExperiences', type: 'checkbox' }
   ];
 
   const experienceFields = [
@@ -278,9 +279,10 @@ export default function EvaluationFormPage() {
         <Form
           fields={fields}
           initialValues={formData}
-          rowsConfig={[2, 2, 2, 2, 2, 1, 2, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]}
+          rowsConfig={[8, 5, 2, 10]}
           onSubmit={handleSubmit}
           resetAfterSubmit={true}
+          isSeparated={true}
         />
       </div>
 

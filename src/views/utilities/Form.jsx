@@ -5,7 +5,18 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
-const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSubmit, rowsConfig, actionType, userList, readOnly }) => {
+const Form = ({
+  fields,
+  initialValues = {},
+  onFormChange,
+  onSubmit,
+  resetAfterSubmit,
+  rowsConfig,
+  actionType,
+  userList,
+  readOnly,
+  isSeparated
+}) => {
   const initializeFormValues = () => {
     return fields.reduce((acc, field) => {
       if (field.defaultValue !== undefined) {
@@ -149,6 +160,19 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
     },
     row: { display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%' },
+    separatedRow: {
+      display: 'flex',
+      gap: '15px',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      width: '100%',
+      backgroundColor: '#fff',
+      margin: '0 auto',
+      padding: '20px',
+      boxSizing: 'border-box',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+    },
     field: {
       flex: '1 1 calc(20% - 12px)',
       minWidth: '200px',
@@ -255,6 +279,7 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
   };
 
   const groupedFields = groupFieldsByRows(fields, rowsConfig || [fields.length]);
+  console.log(groupedFields);
 
   const approvedData = [
     { header: 'Approved By', value: 'John Doe' },
@@ -266,104 +291,107 @@ const Form = ({ fields, initialValues = {}, onFormChange, onSubmit, resetAfterSu
 
   return (
     <>
-      <form style={responsiveStyles.form}>
+      <form style={isSeparated ? {} : responsiveStyles.form}>
         {groupedFields.map((rowFields, rowIndex) => (
-          <div key={rowIndex} style={responsiveStyles.row}>
-            {rowFields.map((field, fieldIndex) => (
-              <div key={fieldIndex} style={responsiveStyles.field}>
-                {/* Handling Checkboxes (Single & Multiple Options) */}
-                {field.type === 'checkbox' && field.options ? (
-                  <div style={{ textAlign: 'start' }}>
-                    <label style={{ fontWeight: 'bold', fontSize: '14px' }}>{field.label}</label>
-                    {field.options.map((option, idx) => (
-                      <label key={idx} style={{ display: 'flex', gap: '5px' }}>
-                        <input
-                          type="checkbox"
-                          name={field.name}
-                          value={option.value}
-                          checked={(formValues[field.name] ?? []).includes(option.value)}
-                          onChange={(e) => {
-                            const updatedValues = formValues[field.name] ?? [];
-                            const newValue = e.target.value;
-                            const newCheckedState = e.target.checked;
+          <div>
+            <div key={rowIndex} style={isSeparated ? responsiveStyles.separatedRow : responsiveStyles.row}>
+              {rowFields.map((field, fieldIndex) => (
+                <div key={fieldIndex} style={responsiveStyles.field}>
+                  {/* Handling Checkboxes (Single & Multiple Options) */}
+                  {field.type === 'checkbox' && field.options ? (
+                    <div style={{ textAlign: 'start' }}>
+                      <label style={{ fontWeight: 'bold', fontSize: '14px' }}>{field.label}</label>
+                      {field.options.map((option, idx) => (
+                        <label key={idx} style={{ display: 'flex', gap: '5px' }}>
+                          <input
+                            type="checkbox"
+                            name={field.name}
+                            value={option.value}
+                            checked={(formValues[field.name] ?? []).includes(option.value)}
+                            onChange={(e) => {
+                              const updatedValues = formValues[field.name] ?? [];
+                              const newValue = e.target.value;
+                              const newCheckedState = e.target.checked;
 
-                            handleChange(
-                              field.name,
-                              newCheckedState
-                                ? [...updatedValues, newValue] // Add selected value
-                                : updatedValues.filter((val) => val !== newValue) // Remove unselected value
-                            );
-                          }}
-                        />
-                        {option.label}
-                      </label>
-                    ))}
-                  </div>
-                ) : field.type === 'checkbox' ? (
-                  <div style={{ textAlign: 'start' }}>
-                    <input
-                      type="checkbox"
-                      name={field.name}
-                      checked={formValues[field.name] || false}
-                      onChange={(e) => handleChange(field.name, e.target.checked)}
-                      style={responsiveStyles.checkbox}
-                    />
-                    <label style={{ fontWeight: 'bold', fontSize: '14px' }}>{field.label}</label>
-                  </div>
-                ) : (
-                  <>
-                    <label
-                      style={{
-                        ...responsiveStyles.label,
-                        display: field.show ? 'none' : 'block'
-                      }}
-                    >
-                      {field.label}
-                    </label>
-
-                    {field.type === 'select' ? (
-                      <select
+                              handleChange(
+                                field.name,
+                                newCheckedState
+                                  ? [...updatedValues, newValue] // Add selected value
+                                  : updatedValues.filter((val) => val !== newValue) // Remove unselected value
+                              );
+                            }}
+                          />
+                          {option.label}
+                        </label>
+                      ))}
+                    </div>
+                  ) : field.type === 'checkbox' ? (
+                    <div style={{ textAlign: 'start' }}>
+                      <input
+                        type="checkbox"
                         name={field.name}
-                        value={formValues[field.name] || ''}
-                        onChange={(e) => handleChange(field.name, e.target.value)}
+                        checked={formValues[field.name] || false}
+                        onChange={(e) => handleChange(field.name, e.target.checked)}
+                        style={responsiveStyles.checkbox}
+                      />
+                      <label style={{ fontWeight: 'bold', fontSize: '14px' }}>{field.label}</label>
+                    </div>
+                  ) : (
+                    <>
+                      <label
                         style={{
-                          ...responsiveStyles.input,
+                          ...responsiveStyles.label,
                           display: field.show ? 'none' : 'block'
                         }}
                       >
-                        {field.options.map((option, idx) => (
-                          <option key={idx} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    ) : field.type === 'textarea' ? (
-                      <textarea
-                        name={field.name}
-                        value={formValues[field.name] || ''}
-                        placeholder={field.placeholder}
-                        readOnly={readOnly}
-                        onChange={(e) => handleChange(field.name, e.target.value)}
-                        style={{ ...responsiveStyles.input, height: '100px', resize: 'vertical' }}
-                      />
-                    ) : (
-                      <input
-                        type={field.type}
-                        name={field.name}
-                        value={formValues[field.name] || ''}
-                        placeholder={field.placeholder}
-                        readOnly={readOnly}
-                        onChange={(e) => handleChange(field.name, e.target.value)}
-                        style={{
-                          ...responsiveStyles.input,
-                          display: field.show ? 'none' : 'block'
-                        }}
-                      />
-                    )}
-                  </>
-                )}
-              </div>
-            ))}
+                        {field.label}
+                      </label>
+
+                      {field.type === 'select' ? (
+                        <select
+                          name={field.name}
+                          value={formValues[field.name] || ''}
+                          onChange={(e) => handleChange(field.name, e.target.value)}
+                          style={{
+                            ...responsiveStyles.input,
+                            display: field.show ? 'none' : 'block'
+                          }}
+                        >
+                          {field.options.map((option, idx) => (
+                            <option key={idx} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      ) : field.type === 'textarea' ? (
+                        <textarea
+                          name={field.name}
+                          value={formValues[field.name] || ''}
+                          placeholder={field.placeholder}
+                          readOnly={readOnly}
+                          onChange={(e) => handleChange(field.name, e.target.value)}
+                          style={{ ...responsiveStyles.input, height: '100px', resize: 'vertical' }}
+                        />
+                      ) : (
+                        <input
+                          type={field.type}
+                          name={field.name}
+                          value={formValues[field.name] || ''}
+                          placeholder={field.placeholder}
+                          readOnly={readOnly}
+                          onChange={(e) => handleChange(field.name, e.target.value)}
+                          style={{
+                            ...responsiveStyles.input,
+                            display: field.show ? 'none' : 'block'
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+            {isSeparated && rowIndex < groupedFields.length - 1 && <br />}
           </div>
         ))}
         {actionType === 'sendToApproval' ? (

@@ -15,7 +15,8 @@ const Form = ({
   actionType,
   userList,
   readOnly,
-  isSeparated
+  isSeparated,
+  validationErrors = {}
 }) => {
   const initializeFormValues = () => {
     return fields.reduce((acc, field) => {
@@ -52,13 +53,13 @@ const Form = ({
   const handleChange = (name, value) => {
     const updatedValues = { ...formValues, [name]: value };
     setFormValues(updatedValues);
-    if (onFormChange) onFormChange(updatedValues); // Notify parent of changes
+    if (onFormChange) onFormChange(updatedValues);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formValues); // Submit all form data
-    if (resetAfterSubmit) setFormValues(initializeFormValues()); // Reset form after submit
+    onSubmit(formValues);
+    if (resetAfterSubmit) setFormValues(initializeFormValues());
   };
 
   const handleFormSubmit = (e) => {
@@ -279,7 +280,6 @@ const Form = ({
   };
 
   const groupedFields = groupFieldsByRows(fields, rowsConfig || [fields.length]);
-  console.log(groupedFields);
 
   const approvedData = [
     { header: 'Approved By', value: 'John Doe' },
@@ -299,7 +299,7 @@ const Form = ({
                 <div key={fieldIndex} style={responsiveStyles.field}>
                   {/* Handling Checkboxes (Single & Multiple Options) */}
                   {field.type === 'checkbox' && field.options ? (
-                    <div style={{ textAlign: 'start' }}>
+                    <div style={{ textAlign: 'start' }} hidden={field.hide}>
                       <label style={{ fontWeight: 'bold', fontSize: '14px' }}>{field.label}</label>
                       {field.options.map((option, idx) => (
                         <label key={idx} style={{ display: 'flex', gap: '5px' }}>
@@ -324,20 +324,31 @@ const Form = ({
                           {option.label}
                         </label>
                       ))}
+                      {validationErrors[field.name] && <span style={{ color: 'crimson' }}>{validationErrors[field.name]}</span>}
                     </div>
                   ) : field.type === 'checkbox' ? (
-                    <div style={{ textAlign: 'start' }}>
+                    <div style={{ textAlign: 'start' }} hidden={field.hide}>
                       <input
                         type="checkbox"
+                        id={field.name}
                         name={field.name}
                         checked={formValues[field.name] || false}
-                        onChange={(e) => handleChange(field.name, e.target.checked)}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          if (field.action) {
+                            field.action(checked);
+                          }
+                          handleChange(field.name, checked);
+                        }}
                         style={responsiveStyles.checkbox}
                       />
-                      <label style={{ fontWeight: 'bold', fontSize: '14px' }}>{field.label}</label>
+                      <label htmlFor={field.name} style={{ fontWeight: 'bold', fontSize: '14px', margin: '0 0.5rem' }}>
+                        {field.label}
+                      </label>
+                      {validationErrors[field.name] && <span style={{ color: 'crimson' }}>{validationErrors[field.name]}</span>}
                     </div>
                   ) : (
-                    <>
+                    <div hidden={field.hide}>
                       <label
                         style={{
                           ...responsiveStyles.label,
@@ -351,7 +362,13 @@ const Form = ({
                         <select
                           name={field.name}
                           value={formValues[field.name] || ''}
-                          onChange={(e) => handleChange(field.name, e.target.value)}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (field.action) {
+                              field.action(value);
+                            }
+                            handleChange(field.name, value);
+                          }}
                           style={{
                             ...responsiveStyles.input,
                             display: field.show ? 'none' : 'block'
@@ -372,6 +389,48 @@ const Form = ({
                           onChange={(e) => handleChange(field.name, e.target.value)}
                           style={{ ...responsiveStyles.input, height: '100px', resize: 'vertical' }}
                         />
+                      ) : field.type === 'button' ? (
+                        <input
+                          type="button"
+                          value={field.name}
+                          style={{ ...responsiveStyles.input, cursor: 'pointer' }}
+                          onClick={(e) => console.log(e)}
+                        />
+                      ) : field.type === 'table' ? (
+                        <div hidden={field.showTable}>
+                          <button type="button" onClick={field.addRow} style={responsiveStyles.input} className="margin-bottom-1rem">
+                            Add more
+                          </button>
+
+                          <table className="table table-bordered table-striped table-highlight">
+                            <thead>
+                              <tr>
+                                {field.tableFields.map((tableField, fieldIndex) => (
+                                  <th key={fieldIndex}>{tableField.label}</th>
+                                ))}
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              {field.tableFieldValueList.map((rowValue, valueIndex) => (
+                                <tr key={valueIndex}>
+                                  {field.tableFields.map((tableField, fieldIndex) => (
+                                    <td key={fieldIndex}>
+                                      <input
+                                        type={tableField.type}
+                                        name={tableField.name}
+                                        placeholder={tableField.placeholder}
+                                        value={rowValue[tableField.name] || ''}
+                                        onChange={(e) => field.handleTableValueChange(valueIndex, tableField.name, e.target.value)}
+                                        style={{ ...responsiveStyles.input }}
+                                      />
+                                    </td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       ) : (
                         <input
                           type={field.type}
@@ -386,7 +445,8 @@ const Form = ({
                           }}
                         />
                       )}
-                    </>
+                      {validationErrors[field.name] && <span style={{ color: 'crimson' }}>{validationErrors[field.name]}</span>}
+                    </div>
                   )}
                 </div>
               ))}

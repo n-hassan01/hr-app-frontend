@@ -328,6 +328,7 @@ const Form = ({
                     </div>
                   ) : field.type === 'checkbox' ? (
                     <div style={{ textAlign: 'start' }} hidden={field.hide}>
+                      <br />
                       <input
                         type="checkbox"
                         id={field.name}

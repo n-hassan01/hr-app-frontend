@@ -21,7 +21,7 @@ export default function EvaluationFormPage() {
 
   const [formData, setFormData] = useState({});
 
-  const [candidateExperienceList, setCandidateExperienceList] = useState([{ company: '', department: '' }]);
+  const [candidateExperienceList, setCandidateExperienceList] = useState([{ company: '', department: '', from: null, to: null }]);
   const [showExperienceForm, setShowExperienceForm] = useState(true);
   const handleShowExperience = (value) => {
     setShowExperienceForm((prev) => !prev);
@@ -42,7 +42,9 @@ export default function EvaluationFormPage() {
 
   const experienceFields = [
     { label: 'COMPANY', name: 'company', type: 'text' },
-    { label: 'DEPARTMENT', name: 'department', type: 'text' }
+    { label: 'DEPARTMENT', name: 'department', type: 'text' },
+    { label: 'FROM', name: 'from', type: 'date' },
+    { label: 'TO', name: 'to', type: 'date' }
   ];
 
   const [formErrors, setFormErrors] = useState({});
@@ -84,8 +86,15 @@ export default function EvaluationFormPage() {
 
   const handleSubmit = async (data) => {
     try {
+      const today = new Date();
+      const filteredArray = candidateExperienceList.filter((item) => Object.values(item).some((value) => value !== ''));
+
+      const experiences = filteredArray.map(({ from, to }) => ({ from, to }));
+      if (data.from) experiences.push({ from: data.from, to: today });
+
+      const totalExperiences = countTotalYearsOfExperiences(experiences);
+
       const errorInputs = validateForm(data);
-      console.log(errorInputs);
       if (Object.keys(errorInputs).length > 0) {
         setFormErrors(errorInputs);
         console.log(formErrors);
@@ -130,9 +139,9 @@ export default function EvaluationFormPage() {
         facilitiesInfo: data.facilitiesInfo ?? [],
         evaluationInfo: data.evaluationInfo ?? [],
         fullName: data.fullName ?? '',
+        totalYearsOfExperience: totalExperiences,
         referenceName: data.referenceName ?? ''
       };
-
       const candidateResponse = await addCandidateInfoService(candidateRequestBody);
 
       if (candidateResponse?.data?.statusCode === 200) {
@@ -156,6 +165,7 @@ export default function EvaluationFormPage() {
           incentiveOrKpi: data.incentiveOrKpi ?? '',
           mobileCeiling: data.mobileCeiling ?? '',
           totalCtc: data.totalCtc ?? '',
+          fromDate: data.from,
           candidate: candidateResponse.data.data
         };
         await addCandidateFacilitiesInfoService(facilitiesRequestBody);
@@ -172,6 +182,36 @@ export default function EvaluationFormPage() {
     }
   };
 
+  const countTotalYearsOfExperiences = (data) => {
+    let totalMonths = 0;
+
+    data.forEach((element) => {
+      if (!element.from || !element.to) return;
+
+      const from = new Date(element.from);
+      const to = new Date(element.to);
+
+      if (isNaN(from.getTime()) || isNaN(to.getTime())) return;
+
+      const years = to.getFullYear() - from.getFullYear();
+      const months = to.getMonth() - from.getMonth();
+      const days = to.getDate() - from.getDate();
+
+      let total = years * 12 + months;
+
+      if (days < 0) {
+        total -= 1;
+      }
+
+      totalMonths += total;
+    });
+
+    const totalYears = Math.floor(totalMonths / 12);
+    const remainingMonths = totalMonths % 12;
+
+    return `${totalYears} Years ${remainingMonths} Months`;
+  };
+
   const handleExperienceChange = (index, name, value) => {
     const updatedRows = [...candidateExperienceList];
     updatedRows[index][name] = value;
@@ -179,7 +219,7 @@ export default function EvaluationFormPage() {
   };
 
   const handleAddRow = () => {
-    setCandidateExperienceList([...candidateExperienceList, { company: '', department: '' }]);
+    setCandidateExperienceList([...candidateExperienceList, { company: '', department: '', from: null, to: null }]);
   };
 
   const handleExperienceSubmit = async (candidate) => {
@@ -192,7 +232,8 @@ export default function EvaluationFormPage() {
         const requestBody = {
           experienceField: lineInfo.department || '',
           organization: lineInfo.company || '',
-          years: lineInfo.years || '',
+          fromDate: lineInfo.from,
+          toDate: lineInfo.to,
           candidate: candidate
         };
 
@@ -233,7 +274,8 @@ export default function EvaluationFormPage() {
 
     { label: 'CURRENT COMPANY', name: 'currentCompany', type: 'text', placeholder: 'enter your current company' },
     { label: 'CURRENT DEPARTMENT', name: 'currentDepartment', type: 'text', placeholder: 'enter your current department' },
-    { label: 'MORE EXPERIENCES?', name: 'addExperience', type: 'checkbox', action: handleShowExperience },
+    { label: 'FROM', name: 'from', type: 'date' },
+    { label: 'PREVIOUS EXPERIENCES', name: 'addExperience', type: 'checkbox', action: handleShowExperience },
     {
       label: '',
       name: 'experiences',
@@ -278,7 +320,7 @@ export default function EvaluationFormPage() {
         <Form
           fields={fields}
           initialValues={formData}
-          rowsConfig={[8, 5, 2, 4]}
+          rowsConfig={[8, 5, 2, 5]}
           onSubmit={handleSubmit}
           resetAfterSubmit={true}
           isSeparated={true}
